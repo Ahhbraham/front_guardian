@@ -6,6 +6,7 @@ import LoginPage from '@/views/LoginPage.vue'
 
 import HomePage from '@/views/HomePage.vue'
 import RegisterPage from '@/views/RegisterPage.vue'
+import FirstAid from '@/views/FirstAid.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -39,6 +40,12 @@ const router = createRouter({
           path: '/HomePage',
           name: 'HomePage',
           component: HomePage,
+        },
+
+        {
+          path: '/FirstAid',
+          name: 'FirstAid',
+          component: FirstAid,
         },
       ],
     },

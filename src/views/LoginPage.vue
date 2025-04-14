@@ -31,7 +31,6 @@
             spellcheck="false"
             data-lpignore="true"
             placeholder="Password"
-            :style="{ color: showPassword ? 'black' : 'white' }"
           />
           <button type="button" id="eyeball" @click="togglePassword" @mousedown.prevent>
             <div class="eye"></div>
@@ -39,7 +38,7 @@
           <div id="beam" ref="beam"></div>
         </div>
       </div>
-      <!-- Submit Button -->
+      <!-- Submit Button() -->
       <button id="submit">Sign in</button>
       <!-- Sign up link -->
       <div class="signup-link">
@@ -50,6 +49,57 @@
 </template>
 
 <script>
+//below is login logic
+import { ref } from 'vue'
+import { useRouter } from 'vue-router'
+import { useAuth } from '../services/auth.service'
+
+const router = useRouter()
+const { login, loading, error } = useAuth()
+
+// Form fields
+const email = ref('')
+const password = ref('')
+const showPassword = ref(false)
+const rememberMe = ref(false)
+const form = ref(null)
+
+// Validation rules
+const emailRules = [
+  (v) => !!v || 'Email is required',
+  (v) => /.+@.+\..+/.test(v) || 'Email must be valid',
+]
+
+const passwordRules = [(v) => !!v || 'Password is required']
+
+// Login handler with form validation
+async function handleLogin() {
+  // Validate form before submission
+  const isValid = form.value?.validate()
+
+  if (!isValid) {
+    return
+  }
+
+  if (!email.value || !password.value) {
+    console.error('Email and password are required')
+    return
+  }
+
+  try {
+    await login({
+      email: email.value,
+      password: password.value,
+    })
+
+    // Redirect after successful login
+    router.push('/welcome')
+  } catch (err) {
+    // Error is already handled by the auth service
+    console.error('Login failed', err)
+  }
+}
+//above is login logic
 export default {
   name: 'LoginForm',
   data() {
@@ -92,7 +142,7 @@ export default {
 /* Base styling variables */
 .login-container {
   --bgColor: #f5f5f5;
-  --inputColor: rgb(255, 255, 255);
+  --inputColor: #000000; /* Changed to black for better visibility */
   --outlineColor: #000c66;
   --beamColor: #d7d7d7;
   --spacer: 1.5rem; /* Further reduced to bring elements closer */
@@ -113,7 +163,7 @@ export default {
 /* Password visibility toggle styling */
 .show-password .login-container {
   --bgColor: #000c66;
-  --inputColor: white;
+  --inputColor: #000000; /* Changed to black for better visibility */
   --outlineColor: #ffffff;
 }
 
@@ -142,13 +192,28 @@ input,
 button {
   font-size: 1.5rem;
   font-family: Nunito, sans-serif;
-  color: #e2e2f3;
+  color: var(--inputColor); /* Use the variable here */
+}
+
+/* Input field styling */
+input {
+  padding: 0.75rem 4rem 0.75rem 0.75rem;
+  width: 100%;
+  border: 3px solid #000c66;
+  border-radius: 4px;
+  background-color: transparent;
+  box-shadow: inset 0 0 0 2px #e2e2f3;
+  color: var(--inputColor); /* Use the variable here */
+}
+
+/* Placeholder styling */
+::placeholder {
+  color: #666; /* Dark gray for better visibility */
+  opacity: 1; /* Ensure full opacity */
 }
 
 /* Focus states */
-label:focus,
-input:focus,
-button:focus {
+input:focus {
   outline: 1px solid #000c66;
   outline-offset: 2px;
 }
@@ -173,21 +238,6 @@ button:focus {
 .input-wrapper {
   position: relative;
   overflow: visible;
-}
-
-/* Input field styling */
-input {
-  padding: 0.75rem 4rem 0.75rem 0.75rem;
-  width: 100%;
-  border: 3px solid #000c66;
-  border-radius: 4px;
-  background-color: transparent;
-  box-shadow: inset 0 0 0 2px #e2e2f3;
-  color: #ffffff;
-}
-
-input:focus {
-  outline-offset: 1px;
 }
 
 /* Password visibility states */
@@ -225,7 +275,7 @@ input:focus {
 .eye {
   width: var(--size);
   height: var(--size);
-  border: 2px solid var(--inputColor);
+  border: 2px solid #000000;
   border-radius: calc(var(--size) / 1.5) 0;
   transform: rotate(45deg);
   position: relative;

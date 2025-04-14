@@ -14,10 +14,10 @@ import '@mdi/font/css/materialdesignicons.css'
 
 //Others
 import axios from 'axios'
-import '@/assets/fonts/Nunito_Sans/NunitoSans-VariableFont_YTLC,opsz,wdth,wght.ttf'
 //
 
 const app = createApp(App)
+//
 const vuetify = createVuetify({
   components,
   directives,
@@ -29,6 +29,7 @@ const vuetify = createVuetify({
 app.use(createPinia())
 app.use(router)
 app.use(vuetify)
+//console error
 app.use(axios)
 
 app.mount('#app')
