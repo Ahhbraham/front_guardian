@@ -1,13 +1,11 @@
 <template>
   <div class="login-container">
-    <!-- Header Icon with reduced margin -->
     <img src="../assets/header.png" class="header-icon" />
-    <!-- Login Form -->
-    <form @submit.prevent>
-      <!-- Username/Email Input -->
+    <form @submit.prevent="handleLogin">
       <div class="form-item">
         <div class="input-wrapper">
           <input
+            v-model="email"
             type="text"
             id="username"
             autocomplete="off"
@@ -19,10 +17,10 @@
           />
         </div>
       </div>
-      <!-- Password Input with Toggle -->
       <div class="form-item">
         <div class="input-wrapper">
           <input
+            v-model="password"
             :type="showPassword ? 'text' : 'password'"
             id="password"
             autocomplete="off"
@@ -38,9 +36,7 @@
           <div id="beam" ref="beam"></div>
         </div>
       </div>
-      <!-- Submit Button() -->
-      <button id="submit">Sign in</button>
-      <!-- Sign up link -->
+      <button type="submit" id="submit">Sign in</button>
       <div class="signup-link">
         Don't have an account? <router-link to="/RegisterPage">Sign up</router-link>
       </div>
@@ -49,91 +45,80 @@
 </template>
 
 <script>
-//below is login logic
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuth } from '../services/auth.service'
 
-const router = useRouter()
-const { login, loading, error } = useAuth()
-
-// Form fields
-const email = ref('')
-const password = ref('')
-const showPassword = ref(false)
-const rememberMe = ref(false)
-const form = ref(null)
-
-// Validation rules
-const emailRules = [
-  (v) => !!v || 'Email is required',
-  (v) => /.+@.+\..+/.test(v) || 'Email must be valid',
-]
-
-const passwordRules = [(v) => !!v || 'Password is required']
-
-// Login handler with form validation
-async function handleLogin() {
-  // Validate form before submission
-  const isValid = form.value?.validate()
-
-  if (!isValid) {
-    return
-  }
-
-  if (!email.value || !password.value) {
-    console.error('Email and password are required')
-    return
-  }
-
-  try {
-    await login({
-      email: email.value,
-      password: password.value,
-    })
-
-    // Redirect after successful login
-    router.push('/welcome')
-  } catch (err) {
-    // Error is already handled by the auth service
-    console.error('Login failed', err)
-  }
-}
-//above is login logic
 export default {
   name: 'LoginForm',
-  data() {
-    return {
-      showPassword: false, // Controls password visibility
-      beamDegrees: 0, // Controls the angle of the beam effect
-    }
-  },
-  mounted() {
-    // Add mouse move listener for beam effect
-    document.addEventListener('mousemove', this.handleMouseMove)
-  },
-  beforeDestroy() {
-    // Clean up mouse move listener
-    document.removeEventListener('mousemove', this.handleMouseMove)
-  },
-  methods: {
-    togglePassword() {
-      // Toggle password visibility
-      this.showPassword = !this.showPassword
-      document.body.classList.toggle('show-password')
-    },
-    handleMouseMove(e) {
-      // Handle beam effect based on mouse position
-      if (!this.$refs.beam) return
+  setup() {
+    const router = useRouter()
+    const authService = useAuth()
 
-      const rect = this.$refs.beam.getBoundingClientRect()
+    // Form data
+    const email = ref('')
+    const password = ref('')
+    const showPassword = ref(false)
+    const beam = ref(null)
+    const beamDegrees = ref(0)
+
+    // Handle mouse movement for beam effect
+    function handleMouseMove(e) {
+      if (!beam.value) return
+
+      const rect = beam.value.getBoundingClientRect()
       const mouseX = rect.right + rect.width / 2
       const mouseY = rect.top + rect.height / 2
       const rad = Math.atan2(mouseX - e.pageX, mouseY - e.pageY)
       const degrees = rad * (20 / Math.PI) * -1 - 350
+      beamDegrees.value = degrees
+    }
 
-      this.beamDegrees = degrees
-    },
+    // Toggle password visibility
+    function togglePassword() {
+      showPassword.value = !showPassword.value
+      document.body.classList.toggle('show-password')
+    }
+
+    // Handle login submission
+    async function handleLogin() {
+      // Basic validation
+      if (!email.value || !password.value) {
+        console.error('Email and password are required')
+        return
+      }
+
+      try {
+        await authService.login({
+          email: email.value,
+          password: password.value,
+        })
+        router.push('/HomePage')
+      } catch (err) {
+        console.error('Login failed:', err)
+        // You might want to show this error to the user
+        // e.g., using a toast notification or error message in the UI
+      }
+    }
+
+    return {
+      email,
+      password,
+      showPassword,
+      beam,
+      beamDegrees,
+      togglePassword,
+      handleLogin,
+      handleMouseMove,
+      loading: authService.loading,
+      error: authService.error,
+    }
+  },
+  mounted() {
+    document.addEventListener('mousemove', this.handleMouseMove)
+  },
+  beforeUnmount() {
+    document.removeEventListener('mousemove', this.handleMouseMove)
   },
 }
 </script>

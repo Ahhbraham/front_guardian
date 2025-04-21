@@ -58,6 +58,48 @@
             </div>
           </v-col>
         </v-row>
+
+        <!-- Added Footer Section -->
+        <v-footer color="#000c66" padless>
+          <v-container>
+            <v-row>
+              <v-col cols="12" md="6">
+                <div class="footer-section">
+                  <h3 class="footer-heading white--text">Legal</h3>
+                  <v-divider class="my-2" style="border-color: #8593ff"></v-divider>
+                  <ul class="footer-links">
+                    <li><a href="#" class="footer-link">Privacy Policy</a></li>
+                    <li><a href="#" class="footer-link">Terms of Use</a></li>
+                  </ul>
+                </div>
+              </v-col>
+              <v-col cols="12" md="6">
+                <div class="footer-section">
+                  <h3 class="footer-heading white--text">Contact Us</h3>
+                  <v-divider class="my-2" style="border-color: #8593ff"></v-divider>
+                  <ul class="footer-contact">
+                    <li>
+                      <v-icon small color="#8593ff" class="mr-2">mdi-email</v-icon>
+                      <span class="footer-text">Guardian@gmail.com</span>
+                    </li>
+                    <li>
+                      <v-icon small color="#8593ff" class="mr-2">mdi-phone</v-icon>
+                      <span class="footer-text">+1 (555) 123-4567</span>
+                    </li>
+                    <li>
+                      <v-icon small color="#8593ff" class="mr-2">mdi-map-marker</v-icon>
+                      <span class="footer-text">123 Safety Ave, Secure City, SC 12345</span>
+                    </li>
+                  </ul>
+                </div>
+              </v-col>
+            </v-row>
+            <v-divider class="my-4" style="border-color: #8593ff"></v-divider>
+            <div class="text-center white--text py-4">
+              &copy; {{ new Date().getFullYear() }} Guardian. All rights reserved.
+            </div>
+          </v-container>
+        </v-footer>
       </v-container>
     </v-main>
   </v-app>
@@ -69,7 +111,10 @@ import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 
 // Import images using ES modules
+import MapImage from '../assets/Map.jpg'
 import EmergencyImage from '../assets/Emergency.png'
+import SupportImage from '../assets/Support.jpg'
+import CommunityImage from '../assets/Community.jpeg'
 
 export default {
   name: 'SafetyApp',
@@ -77,7 +122,7 @@ export default {
     return {
       cards: [
         {
-          image: EmergencyImage,
+          image: MapImage,
           description:
             'Trusted contact alerts and location-based danger warnings for proactive protection',
           title: 'Personal Safety & Realtime Tracking',
@@ -89,12 +134,12 @@ export default {
           title: 'First Aid & Medical Assistance',
         },
         {
-          image: EmergencyImage,
+          image: SupportImage,
           description: 'Confidential help and anonymous reporting for complete post-crisis care',
           title: 'Support & Reporting',
         },
         {
-          image: EmergencyImage,
+          image: CommunityImage,
           description:
             'Community-driven safety initiatives and real-time incident mapping for awareness',
           title: 'Community Safety Network',
@@ -225,6 +270,63 @@ export default {
 
   .card__article {
     height: 300px;
+  }
+}
+
+/* Added Footer Styles */
+.footer-section {
+  margin-bottom: 1.5rem;
+}
+
+.footer-heading {
+  font-size: 1.25rem;
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+}
+
+.footer-links {
+  list-style: none;
+  padding: 0;
+}
+
+.footer-links li {
+  margin-bottom: 0.5rem;
+}
+
+.footer-link {
+  color: #8593ff;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.footer-link:hover {
+  color: #ebedff;
+  text-decoration: underline;
+}
+
+.footer-contact {
+  list-style: none;
+  padding: 0;
+}
+
+.footer-contact li {
+  display: flex;
+  align-items: center;
+  margin-bottom: 0.75rem;
+}
+
+.footer-text {
+  color: #ebedff;
+  font-size: 0.9rem;
+}
+
+@media (max-width: 960px) {
+  .footer-section {
+    text-align: center;
+  }
+
+  .footer-contact li {
+    justify-content: center;
   }
 }
 </style>

@@ -5,8 +5,6 @@
       <h4 class="text__left">GUAR</h4>
       <h4 class="text__right">DIAN</h4>
 
-      <button class="btn explore" @click="redirectToRegister">LOGIN</button>
-
       <h5 class="feature-1">Secure</h5>
       <h5 class="feature-2">Safeguard</h5>
       <h5 class="feature-3">Alert</h5>
@@ -21,10 +19,6 @@ import { useRouter } from 'vue-router'
 import ScrollReveal from 'scrollreveal'
 
 const router = useRouter()
-
-const redirectToRegister = () => {
-  router.push('/LoginPage')
-}
 
 onMounted(() => {
   // The slide at the start
@@ -54,19 +48,18 @@ onMounted(() => {
     delay: 2000,
   })
 
-  // below is for Login
-  ScrollReveal().reveal('.container .explore', {
-    duration: 1000,
-    delay: 3900,
-  })
-
   // Features words
   ScrollReveal().reveal('.container h5', {
     duration: 1400,
     interval: 250,
     delay: 2700,
   })
+
+  // Auto-redirect to HomePage after all animations complete (3900ms is the longest animation duration)
+  setTimeout(() => {
+    router.push('/HomePage')
+  }, 4900)
 })
 </script>
 
-<style src="../assets/LandingPage.css"></style>
+<style src="../assets/SplashScreen.css"></style>

@@ -1,7 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 
 import Home from '@/Home.vue'
-import LandingPage from '@/views/LandingPage.vue'
+import SplashScreen from '@/views/SplashScreen.vue'
 import LoginPage from '@/views/LoginPage.vue'
 
 import HomePage from '@/views/HomePage.vue'
@@ -14,8 +14,8 @@ const router = createRouter({
     //i think it loads App.vue which is raw code(html css)
     {
       path: '/',
-      name: 'LandingPage',
-      component: LandingPage,
+      name: 'SplashScreen',
+      component: SplashScreen,
       meta: { hideNavbar: true }, //Hides the navbar
     },
 

@@ -29,7 +29,6 @@ const vuetify = createVuetify({
 app.use(createPinia())
 app.use(router)
 app.use(vuetify)
-//console error
-app.use(axios)
+app.config.globalProperties.$axios = axios
 
 app.mount('#app')
