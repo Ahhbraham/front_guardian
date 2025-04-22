@@ -2,35 +2,69 @@
   <div class="first-aid-container">
     <!-- Main Layout with Left, Center, and Right Sections -->
     <div class="main-layout">
-      <!-- Left Section: Header and Description -->
+      <!-- Left Section: Header and Search -->
       <div class="left-section">
         <div class="header">
-          <h1>Emergencies Requiring First Aid</h1>
-          <p>Quick and clear steps</p>
+          <h1>Emergencies <span>&</span> First Aid</h1>
+          <p>Quick, clear steps for emergencies</p>
+        </div>
+        <div class="search-section">
+          <div class="search-bar-wrapper">
+            <span class="search-icon">🔍</span>
+            <input
+              v-model="searchQuery"
+              type="text"
+              placeholder="Search emergencies & first aid"
+              class="search-bar"
+            />
+          </div>
         </div>
       </div>
 
       <!-- Center Section: Panic Button -->
       <div class="center-section">
-        <div class="panic-card" @click="handlePanic">
-          <div class="bg">
-            <button class="panic-button-text">SOS</button>
-          </div>
-          <div class="blob"></div>
-        </div>
-      </div>
-
-      <!-- Right Section: Search Bar -->
-      <div class="right-section">
-        <div class="search-section">
-          <h3>Search Emergencies</h3>
-          <div class="search-bar-wrapper">
-            <input v-model="searchQuery" type="text" placeholder="Search" class="search-bar" />
-            <span class="search-icon">🔍</span>
-          </div>
-        </div>
+        <v-btn
+          fab
+          :class="{ vibrating: !dialog }"
+          @click="showDialog"
+          style="
+            background-color: #ffffff;
+            border: 2px solid #f5f5f5;
+            width: 12.8vw;
+            height: 12.8vw;
+            border-radius: 50%;
+          "
+          elevation="24"
+        >
+          <span style="color: #333333; font-size: 2.048vw; font-weight: bold">SOS</span>
+        </v-btn>
       </div>
     </div>
+
+    <!-- Contact Dialog -->
+    <v-dialog v-model="dialog" max-width="400" persistent>
+      <v-card color="#ffffff">
+        <v-card-title class="text-h5" style="color: #333333"> Emergency Contact </v-card-title>
+        <v-card-text>
+          <v-btn block class="mb-2" color="#f5f5f5" dark @click="contactService('Police')">
+            Police
+          </v-btn>
+          <v-btn block class="mb-2" color="#f5f5f5" dark @click="contactService('Ambulance')">
+            Ambulance
+          </v-btn>
+          <v-btn block class="mb-2" color="#f5f5f5" dark @click="contactService('Fire Service')">
+            Fire Service
+          </v-btn>
+          <v-btn block color="#f5f5f5" dark @click="contactService('Trusted Circles')">
+            Trusted Circles
+          </v-btn>
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn color="#333333" text @click="dialog = false">Cancel</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
 
     <!-- Results Section -->
     <div class="results">
@@ -47,12 +81,12 @@
               {{ emergency.name }}
             </a>
             <div v-if="emergency.showSteps" class="steps">
-              <h4>Step-by-Step First Aid Instructions:</h4>
+              <h4>Instructions:</h4>
               <ol>
                 <li v-for="(step, stepIndex) in emergency.steps" :key="stepIndex">{{ step }}</li>
               </ol>
               <button class="read-aloud-button" @click="readSteps(emergency.steps)">
-                Read Steps Aloud
+                Read Aloud
               </button>
             </div>
           </li>
@@ -73,6 +107,7 @@ export default {
   data() {
     return {
       searchQuery: '',
+      dialog: false,
       emergencies: [
         {
           title: 'Traumatic Injuries (Bleeding, Breaks, and Penetrating Wounds)',
@@ -725,8 +760,13 @@ export default {
     toggleSteps(emergency) {
       emergency.showSteps = !emergency.showSteps
     },
-    handlePanic() {
-      alert('Panic Button Pressed! Calling emergency services...')
+    showDialog() {
+      this.dialog = true
+    },
+    contactService(service) {
+      console.log(`Contacting ${service}...`)
+      alert(`Contacting ${service}`)
+      this.dialog = false
     },
     scrollToTop() {
       window.scrollTo({ top: 0, behavior: 'smooth' })
@@ -751,12 +791,12 @@ export default {
   margin: 0;
   padding: 20px;
   font-family: 'Arial', sans-serif;
-  background: #000c66; /* Changed to requested dark blue */
+  background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); /* Gradient blue background */
   min-height: 100vh;
   box-sizing: border-box;
 }
 
-/* Main Layout: Left, Center, and Right Sections */
+/* Main Layout */
 .main-layout {
   display: flex;
   flex-wrap: wrap;
@@ -765,24 +805,27 @@ export default {
   align-items: flex-start;
 }
 
-/* Left Section: Header */
+/* Left Section: Header and Search */
 .left-section {
   flex: 1;
   min-width: 300px;
 }
 
+/* Header */
 .header {
-  background: #e2e2f3; /* Lavender Web */
-  color: #000;
-  padding: 30px;
-  border-radius: 15px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  color: #ffffff;
+  padding: 10px 0;
 }
 
 .header h1 {
-  font-size: 2.5em;
+  font-size: 3em;
+  font-weight: bold;
   margin: 0;
-  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
+  line-height: 1.2;
+}
+
+.header h1 span {
+  font-size: 1.2em; /* Slightly larger ampersand */
 }
 
 .header p {
@@ -791,125 +834,23 @@ export default {
   opacity: 0.9;
 }
 
-/* Center Section: Panic Button */
-.center-section {
-  flex: 0 0 auto;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-width: 150px;
-}
-
-.panic-card {
-  position: relative;
-  width: 150px;
-  height: 200px;
-  border-radius: 14px;
-  z-index: 1111;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-}
-
-.bg {
-  position: absolute;
-  top: 5px;
-  left: 5px;
-  width: 140px;
-  height: 190px;
-  z-index: 2;
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(24px);
-  border-radius: 10px;
-  overflow: hidden;
-  outline: 2px solid white;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.blob {
-  position: absolute;
-  z-index: 1;
-  top: 50%;
-  left: 50%;
-  width: 120px;
-  height: 120px;
-  border-radius: 50%;
-  background-color: #ff0000;
-  opacity: 1;
-  filter: blur(12px);
-  animation: blob-bounce 5s infinite ease;
-}
-
-.panic-button-text {
-  background: none;
-  border: none;
-  color: #000000;
-  font-size: 1.2em;
-  font-weight: bold;
-  cursor: pointer;
-  z-index: 3;
-  text-align: center;
-}
-
-@keyframes blob-bounce {
-  0% {
-    transform: translate(-100%, -100%) translate3d(0, 0, 0);
-  }
-
-  25% {
-    transform: translate(-100%, -100%) translate3d(100%, 0, 0);
-  }
-
-  50% {
-    transform: translate(-100%, -100%) translate3d(100%, 100%, 0);
-  }
-
-  75% {
-    transform: translate(-100%, -100%) translate3d(0, 100%, 0);
-  }
-
-  100% {
-    transform: translate(-100%, -100%) translate3d(0, 0, 0);
-  }
-}
-
-/* Right Section: Search Bar */
-.right-section {
-  flex: 1;
-  min-width: 300px;
-  margin-left: auto;
-}
-
+/* Search Section */
 .search-section {
-  background: #e2e2f3; /* Changed to match header (Lavender Web) */
-  padding: 15px;
-  border-radius: 10px;
-  margin-bottom: 20px;
-}
-
-.search-section h3 {
-  font-size: 1.5em;
-  color: #000;
-  margin-bottom: 15px;
+  margin-top: 20px;
 }
 
 .search-bar-wrapper {
   position: relative;
   width: 100%;
-  max-width: 600px;
+  max-width: 400px;
 }
 
 .search-bar {
   width: 100%;
-  padding: 10px 40px 10px 15px;
+  padding: 10px 40px 10px 40px;
   font-size: 1.1em;
   border: none;
-  border-radius: 20px;
+  border-radius: 25px;
   outline: none;
   background: white;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
@@ -921,11 +862,57 @@ export default {
 
 .search-icon {
   position: absolute;
-  right: 15px;
+  left: 15px;
   top: 50%;
   transform: translateY(-50%);
   font-size: 1.2em;
-  color: #000;
+  color: #666;
+}
+
+/* Center Section: Panic Button */
+.center-section {
+  flex: 0 0 auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-width: 150px;
+}
+
+/* Vibrating button animation */
+.vibrating {
+  animation: vibrate 0.67s infinite; /* 70% reduced speed */
+}
+
+@keyframes vibrate {
+  0% {
+    transform: translate(0);
+  }
+  20% {
+    transform: translate(-4px, 4px);
+  } /* Larger radius */
+  40% {
+    transform: translate(-4px, -4px);
+  }
+  60% {
+    transform: translate(4px, 4px);
+  }
+  80% {
+    transform: translate(4px, -4px);
+  }
+  100% {
+    transform: translate(0);
+  }
+}
+
+/* Dark text for dialog and buttons */
+.v-card-title,
+.v-btn {
+  color: #333333 !important;
+}
+
+/* Button hover effect */
+.v-btn:hover {
+  background-color: #e0e0e0 !important;
 }
 
 /* Results */
@@ -936,7 +923,7 @@ export default {
 
 .results p {
   font-size: 1.1em;
-  color: #ffffff; /* Changed to white for visibility on dark background */
+  color: #ffffff;
   margin: 0;
 }
 
@@ -1069,7 +1056,7 @@ export default {
 /* Back to Top */
 .back-to-top {
   display: block;
-  color: #ffffff; /* Changed to white for visibility */
+  color: #ffffff;
   text-decoration: underline;
   font-size: 1em;
   margin: 20px 0;

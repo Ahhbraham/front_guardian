@@ -96,8 +96,6 @@ export default {
         router.push('/HomePage')
       } catch (err) {
         console.error('Login failed:', err)
-        // You might want to show this error to the user
-        // e.g., using a toast notification or error message in the UI
       }
     }
 
@@ -127,28 +125,31 @@ export default {
 /* Base styling variables */
 .login-container {
   --bgColor: #f5f5f5;
-  --inputColor: #000000; /* Changed to black for better visibility */
+  --inputColor: #000000;
   --outlineColor: #000c66;
   --beamColor: #d7d7d7;
-  --spacer: 1.5rem; /* Further reduced to bring elements closer */
+  --spacer: 1.5rem;
 
-  display: grid;
-  place-items: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   height: 100vh;
   background: var(--bgColor);
+  position: relative;
 }
 
-/* Header icon styling with reduced margin */
+/* Header icon styling */
 .header-icon {
-  width: 170px; /* Smaller size */
-  height: 170px; /* Smaller size */
-  margin: 0px;
+  width: 170px;
+  height: 170px;
+  position: absolute;
+  top: 1px;
 }
 
 /* Password visibility toggle styling */
 .show-password .login-container {
   --bgColor: #000c66;
-  --inputColor: #000000; /* Changed to black for better visibility */
+  --inputColor: #000000;
   --outlineColor: #ffffff;
 }
 
@@ -156,7 +157,7 @@ export default {
 form {
   transform: translate3d(0, 0, 0);
   padding: var(--spacer);
-  margin-top: 0.2rem; /* Added to control spacing from icon */
+  margin: auto;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.362);
   background: rgba(255, 255, 255, 0.05);
   border-radius: 8px;
@@ -177,7 +178,7 @@ input,
 button {
   font-size: 1.5rem;
   font-family: Nunito, sans-serif;
-  color: var(--inputColor); /* Use the variable here */
+  color: var(--inputColor);
 }
 
 /* Input field styling */
@@ -188,13 +189,13 @@ input {
   border-radius: 4px;
   background-color: transparent;
   box-shadow: inset 0 0 0 2px #e2e2f3;
-  color: var(--inputColor); /* Use the variable here */
+  color: var(--inputColor);
 }
 
 /* Placeholder styling */
 ::placeholder {
-  color: #666; /* Dark gray for better visibility */
-  opacity: 1; /* Ensure full opacity */
+  color: #666;
+  opacity: 1;
 }
 
 /* Focus states */
