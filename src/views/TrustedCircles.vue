@@ -1,1 +1,3 @@
-<template></template>
+<template>
+  <v-text> One </v-text>
+</template>
