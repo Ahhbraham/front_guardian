@@ -143,7 +143,7 @@ export default {
   width: 170px;
   height: 170px;
   position: absolute;
-  top: 1px;
+  top: 5px;
 }
 
 /* Password visibility toggle styling */

@@ -9,6 +9,7 @@ import RegisterPage from '@/views/RegisterPage.vue'
 import FirstAid from '@/views/FirstAid.vue'
 import LiveTrack from '@/views/LiveTrack.vue'
 import GuardianAlert from '@/views/GuardianAlert.vue'
+import GuardianReport from '@/views/GuardianReport.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -61,6 +62,12 @@ const router = createRouter({
           path: '/GuardianAlert',
           name: 'GuardianAlert',
           component: GuardianAlert,
+        },
+
+        {
+          path: '/GuardianReport',
+          name: 'GuardianReport',
+          component: GuardianReport,
         },
       ],
     },

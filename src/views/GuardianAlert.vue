@@ -40,7 +40,7 @@
     <div class="button-overlay">
       <v-btn
         fab
-        :class="{ vibrating: !dialog }"
+        :class="{ vibrating: !dialog && !countdownActive }"
         @click="showDialog"
         style="
           background-color: #ffffff;
@@ -48,6 +48,7 @@
           width: 12.8vw;
           height: 12.8vw;
           border-radius: 50%;
+          z-index: 10;
         "
         elevation="24"
       >
@@ -55,25 +56,65 @@
       </v-btn>
     </div>
 
+    <!-- Countdown Overlay -->
+    <v-dialog v-model="countdownActive" fullscreen hide-overlay transition="fade-transition">
+      <v-card color="#ff4444" class="countdown-overlay">
+        <div class="countdown-content">
+          <div class="countdown-number">{{ countdown }}</div>
+          <div class="countdown-text">Emergency call in progress</div>
+          <v-btn
+            @click="cancelCountdown"
+            large
+            dark
+            class="countdown-cancel"
+            color="#000C66"
+            variant="text"
+            elevation="12"
+          >
+            CANCEL
+          </v-btn>
+        </div>
+      </v-card>
+    </v-dialog>
+
     <!-- Contact Dialog -->
     <v-dialog v-model="dialog" max-width="400" persistent>
-      <v-card color="#ffffff">
-        <v-card-title class="text-h5" style="color: #333333"> Emergency</v-card-title>
-        <v-card-text>
-          <v-btn block class="mb-2" color="#f5f5f5" dark @click="contactService('Police')">
+      <v-card>
+        <v-card-title class="text-h5" style="color: #333333; padding: 16px">
+          Emergency Services
+        </v-card-title>
+        <v-card-text style="padding: 16px">
+          <v-btn block class="mb-2" color="#e0e0e0" @click="startCountdown('Police')">
             Police
           </v-btn>
-          <v-btn block class="mb-2" color="#f5f5f5" dark @click="contactService('Ambulance')">
+          <v-btn block class="mb-2" color="#e0e0e0" @click="startCountdown('Ambulance')">
             Ambulance
           </v-btn>
-          <v-btn block class="mb-2" color="#f5f5f5" dark @click="contactService('Fire Service')">
+          <v-btn block class="mb-2" color="#e0e0e0" @click="startCountdown('Fire Service')">
             Fire Services
           </v-btn>
-          <v-btn block color="#f5f5f5" dark @click="contactService('Trusted Circles')">
-            Trusted Circles
-          </v-btn>
+          <v-divider class="my-3"></v-divider>
+          <div class="contacts-header">Trusted Contacts</div>
+          <div class="contacts-list">
+            <div
+              v-for="(contact, index) in trustedContacts"
+              :key="'contact-' + index"
+              class="contact-item"
+              @click="startCountdown(contact.name)"
+            >
+              <v-avatar size="40" class="contact-avatar">
+                <img :src="contact.photo" :alt="contact.name" />
+              </v-avatar>
+              <div class="contact-details">
+                <div class="contact-name">{{ contact.name }}</div>
+                <div class="contact-status" :class="'status-' + contact.status">
+                  {{ contact.status }}
+                </div>
+              </div>
+            </div>
+          </div>
         </v-card-text>
-        <v-card-actions>
+        <v-card-actions style="padding: 16px">
           <v-spacer></v-spacer>
           <v-btn color="#333333" text @click="dialog = false">Cancel</v-btn>
         </v-card-actions>
@@ -84,15 +125,39 @@
 
 <script>
 export default {
-  name: 'PanicButtonWithWaves',
+  name: 'EnhancedPanicButton',
   data() {
     return {
       dialog: false,
+      countdownActive: false,
+      countdown: 5,
+      countdownInterval: null,
+      selectedService: '',
       waves: [
         { color: '#E2E2F3', opacity: 0.7 },
         { color: '#E2E2F3', opacity: 0.5 },
         { color: '#E2E2F3', opacity: 0.3 },
         { color: '#E2E2F3', opacity: 0.1 },
+      ],
+      trustedContacts: [
+        {
+          name: 'John Doe',
+          photo: 'https://randomuser.me/api/portraits/men/1.jpg',
+          status: 'Available',
+          phone: '+1234567890',
+        },
+        {
+          name: 'Jane Smith',
+          photo: 'https://randomuser.me/api/portraits/women/1.jpg',
+          status: 'Notified',
+          phone: '+1987654321',
+        },
+        {
+          name: 'Family Group',
+          photo: 'https://cdn-icons-png.flaticon.com/512/1077/1077114.png',
+          status: 'Responding',
+          phone: '+1122334455',
+        },
       ],
     }
   },
@@ -100,11 +165,49 @@ export default {
     showDialog() {
       this.dialog = true
     },
+    startCountdown(service) {
+      this.selectedService = service
+      this.dialog = false
+      this.countdownActive = true
+      this.countdown = 5
+      this.countdownInterval = setInterval(() => {
+        this.countdown--
+        if (this.countdown <= 0) {
+          clearInterval(this.countdownInterval)
+          this.countdownActive = false
+          this.contactService(this.selectedService)
+        }
+      }, 1000)
+    },
+    cancelCountdown() {
+      clearInterval(this.countdownInterval)
+      this.countdownActive = false
+    },
     contactService(service) {
       console.log(`Contacting ${service}...`)
-      alert(`Contacting ${service}`)
-      this.dialog = false
+      if (this.trustedContacts.some((contact) => contact.name === service)) {
+        this.notifyTrustedContact(service)
+      } else {
+        alert(`Contacting ${service}`)
+      }
     },
+    notifyTrustedContact(contactName) {
+      this.trustedContacts = this.trustedContacts.map((contact) => {
+        if (contact.name === contactName) {
+          return {
+            ...contact,
+            status: ['Notified', 'Responding', 'Available'][Math.floor(Math.random() * 3)],
+          }
+        }
+        return contact
+      })
+      alert(`Notifying ${contactName}`)
+    },
+  },
+  beforeDestroy() {
+    if (this.countdownInterval) {
+      clearInterval(this.countdownInterval)
+    }
   },
 }
 </script>
@@ -215,15 +318,86 @@ export default {
   }
 }
 
-/* Dark text for dialog and buttons */
-.v-card-title,
-.v-btn {
-  color: #333333 !important;
+/* Countdown Overlay Styles */
+.countdown-overlay {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
 }
 
-/* Button hover effect */
-.v-btn:hover {
-  background-color: #e0e0e0 !important;
+.countdown-content {
+  text-align: center;
+  color: white;
+}
+
+.countdown-number {
+  font-size: 120px;
+  font-weight: bold;
+  line-height: 1;
+  margin-bottom: 20px;
+}
+
+.countdown-text {
+  font-size: 24px;
+  margin-bottom: 40px;
+}
+
+.countdown-cancel {
+  font-size: 18px;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+/* Contacts Panel Styles */
+.contacts-header {
+  font-weight: bold;
+  margin: 15px 0 10px;
+  color: #333;
+}
+
+.contacts-list {
+  margin-top: 10px;
+}
+
+.contact-item {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  margin: 5px 0;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.contact-item:hover {
+  background-color: #f0f0f0;
+}
+
+.contact-details {
+  margin-left: 15px;
+}
+
+.contact-name {
+  font-weight: 500;
+  color: #333;
+}
+
+.contact-status {
+  font-size: 12px;
+  color: #666;
+}
+
+.status-Notified {
+  color: #ff9800;
+}
+
+.status-Responding {
+  color: #4caf50;
+}
+
+.status-Available {
+  color: #2196f3;
 }
 
 /* Mobile adjustments */
@@ -243,6 +417,12 @@ export default {
   }
   .header-overlay {
     top: 4vw;
+  }
+  .countdown-number {
+    font-size: 80px;
+  }
+  .countdown-text {
+    font-size: 18px;
   }
 }
 </style>
