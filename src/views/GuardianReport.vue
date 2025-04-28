@@ -4,12 +4,7 @@
       <v-container fluid class="full-screen-container">
         <v-row justify="center" class="mb-6">
           <v-col cols="12" sm="6" md="4" class="text-center">
-            <v-img
-              src="../assets/header.png"
-              max-height="80"
-              max-width="240"
-              class="mx-auto"
-            ></v-img>
+            <v-img src="../assets/header.png" max-height="80" max-width="240" class="mx-auto" />
           </v-col>
         </v-row>
         <v-row>
@@ -38,7 +33,7 @@
                         :disabled="formData.anonymous"
                         :rules="[(v) => !!v || 'First name is required']"
                         :error-messages="errors.firstName"
-                      ></v-text-field>
+                      />
                     </v-col>
                     <v-col cols="12" md="6">
                       <v-text-field
@@ -50,7 +45,7 @@
                         :disabled="formData.anonymous"
                         :rules="[(v) => !!v || 'Last name is required']"
                         :error-messages="errors.lastName"
-                      ></v-text-field>
+                      />
                     </v-col>
                   </v-row>
                   <v-row>
@@ -64,7 +59,7 @@
                         :disabled="formData.anonymous"
                         :rules="emailRules"
                         :error-messages="errors.email"
-                      ></v-text-field>
+                      />
                     </v-col>
                     <v-col cols="12" md="6">
                       <v-text-field
@@ -76,7 +71,7 @@
                         :disabled="formData.anonymous"
                         :rules="[(v) => !!v || 'Phone number is required']"
                         :error-messages="errors.phone"
-                      ></v-text-field>
+                      />
                     </v-col>
                   </v-row>
                   <v-row>
@@ -88,7 +83,7 @@
                         dense
                         color="#000c66"
                         :disabled="formData.anonymous"
-                      ></v-text-field>
+                      />
                     </v-col>
                   </v-row>
                   <v-checkbox
@@ -96,7 +91,7 @@
                     label="Submit anonymously (if permitted by law)"
                     color="#000c66"
                     class="mt-0"
-                  ></v-checkbox>
+                  />
                   <h2 class="text-h5 mb-4 mt-6">Incident Details</h2>
                   <v-row>
                     <v-col cols="12">
@@ -109,7 +104,7 @@
                         color="#000c66"
                         :rules="[(v) => !!v || 'Crime type is required']"
                         :error-messages="errors.crimeType"
-                      ></v-select>
+                      />
                     </v-col>
                   </v-row>
                   <v-row>
@@ -133,15 +128,13 @@
                             v-bind="props"
                             :rules="[(v) => !!v || 'Date is required']"
                             :error-messages="errors.incidentDate"
-                          ></v-text-field>
+                          />
                         </template>
                         <v-date-picker
                           v-model="formData.incidentDate"
-                          no-title
-                          scrollable
                           color="#E2E2F3"
-                          @update:modelValue="dateMenu = false"
-                        ></v-date-picker>
+                          @update:model-value="dateMenu = false"
+                        />
                       </v-menu>
                     </v-col>
                     <v-col cols="12" md="6">
@@ -164,15 +157,14 @@
                             v-bind="props"
                             :rules="[(v) => !!v || 'Time is required']"
                             :error-messages="errors.incidentTime"
-                          ></v-text-field>
+                          />
                         </template>
                         <v-time-picker
                           v-model="formData.incidentTime"
                           format="24hr"
-                          scrollable
                           color="#000c66"
-                          @update:modelValue="timeMenu = false"
-                        ></v-time-picker>
+                          @update:model-value="timeMenu = false"
+                        />
                       </v-menu>
                     </v-col>
                   </v-row>
@@ -187,7 +179,7 @@
                         :disabled="formData.unknownLocation"
                         :rules="[(v) => !!v || 'Location is required']"
                         :error-messages="errors.incidentLocation"
-                      ></v-text-field>
+                      />
                     </v-col>
                   </v-row>
                   <v-checkbox
@@ -196,7 +188,7 @@
                     color="#000c66"
                     class="mt-0"
                     @change="formData.incidentLocation = $event ? '' : formData.incidentLocation"
-                  ></v-checkbox>
+                  />
                   <v-row>
                     <v-col cols="12">
                       <v-textarea
@@ -208,7 +200,7 @@
                         color="#000c66"
                         :rules="[(v) => !!v || 'Description is required']"
                         :error-messages="errors.description"
-                      ></v-textarea>
+                      />
                     </v-col>
                   </v-row>
                   <h2 class="text-h5 mb-4 mt-6">Attachments (Optional)</h2>
@@ -223,7 +215,7 @@
                         dense
                         color="#000c66"
                         :rules="attachmentRules"
-                      ></v-file-input>
+                      />
                     </v-col>
                   </v-row>
                   <h2 class="text-h5 mb-4 mt-6">Witness Information (Optional)</h2>
@@ -235,7 +227,7 @@
                         outlined
                         dense
                         color="#000c66"
-                      ></v-text-field>
+                      />
                     </v-col>
                     <v-col cols="12" md="6">
                       <v-text-field
@@ -244,7 +236,7 @@
                         outlined
                         dense
                         color="#000c66"
-                      ></v-text-field>
+                      />
                     </v-col>
                   </v-row>
                   <h2 class="text-h5 mb-4 mt-6">Follow-Up Preferences</h2>
@@ -255,7 +247,7 @@
                         label="I agree to be contacted for further details"
                         color="#000c66"
                         class="mt-0"
-                      ></v-checkbox>
+                      />
                     </v-col>
                   </v-row>
                   <h2 class="text-h5 mb-4 mt-6">Consent</h2>
@@ -268,7 +260,7 @@
                         class="mt-0"
                         :rules="[(v) => !!v || 'You must confirm']"
                         :error-messages="errors.consent"
-                      ></v-checkbox>
+                      />
                     </v-col>
                   </v-row>
                   <v-row>
@@ -344,7 +336,6 @@ export default {
     validateForm() {
       this.errors = {}
       let isValid = true
-
       if (!this.formData.anonymous) {
         if (!this.formData.firstName.trim()) {
           this.errors.firstName = 'First name is required'
@@ -366,7 +357,6 @@ export default {
           isValid = false
         }
       }
-
       if (!this.formData.crimeType) {
         this.errors.crimeType = 'Crime type is required'
         isValid = false
@@ -391,7 +381,6 @@ export default {
         this.errors.consent = 'You must confirm the report is truthful'
         isValid = false
       }
-
       return isValid
     },
     handleSubmit() {
@@ -411,35 +400,30 @@ export default {
   min-height: 100vh;
   background: #f5f5f5;
 }
-
 .report-form-container {
   width: 100%;
+  max-width: 1200px;
   padding: 24px;
   border-radius: 8px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
   background: white;
 }
-
 .report-form {
   width: 100%;
 }
-
 .v-text-field,
 .v-textarea,
 .v-select,
 .v-file-input {
   margin-bottom: 8px;
 }
-
 .submit-btn:active {
   transform: translateY(1px);
 }
-
 .text-h5 {
   color: #000c66;
   font-weight: 600;
 }
-
 .text-h4 {
   color: #000c66;
   font-weight: 700;
