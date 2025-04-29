@@ -11,6 +11,7 @@ import LiveTrack from '@/views/LiveTrack.vue'
 import GuardianAlert from '@/views/GuardianAlert.vue'
 import GuardianReport from '@/views/GuardianReport.vue'
 import TrustedCircles from '@/views/TrustedCircles.vue'
+import ZonalUpdates from '@/views/ZonalUpdates.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -74,6 +75,11 @@ const router = createRouter({
           path: '/TrustedCircles',
           name: 'TrustedCircles',
           component: TrustedCircles,
+        },
+        {
+          path: '/ZonalUpdates',
+          name: 'ZonalUpdates',
+          component: ZonalUpdates,
         },
       ],
     },

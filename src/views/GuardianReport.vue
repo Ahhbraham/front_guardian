@@ -137,36 +137,6 @@
                         />
                       </v-menu>
                     </v-col>
-                    <v-col cols="12" md="6">
-                      <v-menu
-                        v-model="timeMenu"
-                        :close-on-content-click="false"
-                        transition="scale-transition"
-                        offset-y
-                        min-width="auto"
-                      >
-                        <template v-slot:activator="{ props }">
-                          <v-text-field
-                            v-model="formData.incidentTime"
-                            label="Incident Time"
-                            prepend-icon="mdi-clock"
-                            readonly
-                            outlined
-                            dense
-                            color="#000c66"
-                            v-bind="props"
-                            :rules="[(v) => !!v || 'Time is required']"
-                            :error-messages="errors.incidentTime"
-                          />
-                        </template>
-                        <v-time-picker
-                          v-model="formData.incidentTime"
-                          format="24hr"
-                          color="#000c66"
-                          @update:model-value="timeMenu = false"
-                        />
-                      </v-menu>
-                    </v-col>
                   </v-row>
                   <v-row>
                     <v-col cols="12">
@@ -196,7 +166,7 @@
                         label="Incident Description"
                         outlined
                         dense
-                        placeholder="Describe the incident, including details about victim(s), suspect(s), and evidence"
+                        placeholder="Describe the incident, including the approximate time it occurred, details about victim(s), suspect(s), and evidence"
                         color="#000c66"
                         :rules="[(v) => !!v || 'Description is required']"
                         :error-messages="errors.description"
@@ -305,7 +275,6 @@ export default {
         anonymous: false,
         crimeType: null,
         incidentDate: null,
-        incidentTime: null,
         incidentLocation: '',
         unknownLocation: false,
         description: '',
@@ -318,7 +287,6 @@ export default {
       errors: {},
       crimeTypes: ['Theft', 'Vandalism', 'Harassment', 'Fraud', 'Other'],
       dateMenu: false,
-      timeMenu: false,
       attachmentRules: [
         (files) =>
           !files ||
@@ -363,10 +331,6 @@ export default {
       }
       if (!this.formData.incidentDate) {
         this.errors.incidentDate = 'Incident date is required'
-        isValid = false
-      }
-      if (!this.formData.incidentTime) {
-        this.errors.incidentTime = 'Incident time is required'
         isValid = false
       }
       if (!this.formData.incidentLocation && !this.formData.unknownLocation) {
