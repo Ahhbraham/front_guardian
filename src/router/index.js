@@ -14,8 +14,11 @@ import GuardianReport from '@/views/GuardianReport.vue'
 import TrustedCircles from '@/views/TrustedCircles.vue'
 import ZonalUpdates from '@/views/ZonalUpdates.vue'
 //abilities
-import PoliceSheet from '@/views/PoliceSheet.vue'
-
+import PoliceAbility from '@/views/PoliceAbility.vue'
+import AmbulanceAbility from '@/views/AmbulanceAbility.vue'
+import FireServicesAbility from '@/views/FireServicesAbility.vue'
+import Admin from '@/views/Admin.vue'
+//
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
@@ -85,9 +88,24 @@ const router = createRouter({
           component: ZonalUpdates,
         },
         {
-          path: '/PoliceSheet',
-          name: 'PoliceSheet',
-          component: PoliceSheet,
+          path: '/PoliceAbility',
+          name: 'PoliceAbility',
+          component: PoliceAbility,
+        },
+        {
+          path: '/AmbulanceAbility',
+          name: 'AmbulanceAbility',
+          component: AmbulanceAbility,
+        },
+        {
+          path: '/FireServicesAbility',
+          name: 'FireServicesAbility',
+          component: FireServicesAbility,
+        },
+        {
+          path: '/Admin',
+          name: 'Admin',
+          component: Admin,
         },
       ],
     },

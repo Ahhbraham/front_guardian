@@ -42,12 +42,12 @@
                 height: 100%;
                 overflow-y: auto;
                 border-left: 1px solid #eee;
-                background: white;
-                padding: 16px 0 16px 16px;
+                background: #f2f5ea;
+                padding: 32px 16px;
               "
             >
               <h2 class="text-h4 font-weight-bold mb-4 px-4">Regional Crime Comparison</h2>
-              <canvas id="crimeChart" style="max-height: 500px; width: 100%"></canvas>
+              <canvas id="crimeChart" style="height: 600px; width: 100%"></canvas>
             </div>
           </v-col>
         </v-row>
@@ -70,7 +70,7 @@
           </v-col>
         </v-row>
 
-        <!-- Added Footer Section -->
+        <!-- Footer -->
         <v-footer color="#000c66" padless>
           <v-container>
             <v-row>
@@ -120,10 +120,10 @@
 import { onMounted } from 'vue'
 import Chart from 'chart.js/auto'
 
-// Import images using ES modules
+// Import images
 import MapImage from '../assets/Map.jpg'
 import EmergencyImage from '../assets/Emergency.png'
-import SupportImage from '../assets/Support.jpg'
+import SupportImage from '../assets/Support.png'
 import CommunityImage from '../assets/Community.jpeg'
 
 export default {
@@ -159,7 +159,6 @@ export default {
   },
   setup() {
     onMounted(() => {
-      // Horizontal Bar Chart for Crime Index
       const ctxCrime = document.getElementById('crimeChart').getContext('2d')
       new Chart(ctxCrime, {
         type: 'bar',
@@ -176,66 +175,37 @@ export default {
             {
               label: 'Crime Index (2024)',
               data: [59.1, 48.3, 44.6, 35.2, 68.7, 22.3],
-              backgroundColor: [
-                '#FF6384', // Red
-                '#36A2EB', // Blue
-                '#FFCE56', // Yellow
-                '#4BC0C0', // Teal
-                '#9966FF', // Purple
-                '#FF9F40', // Orange
-              ],
+              backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40'],
               borderColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40'],
               borderWidth: 1,
             },
           ],
         },
         options: {
-          indexAxis: 'y',
           responsive: true,
           maintainAspectRatio: false,
-          layout: {
-            padding: {
-              left: 0,
-              right: 0,
-              top: 0,
-              bottom: 0,
-            },
-          },
+          layout: { padding: 0 },
           scales: {
             x: {
-              beginAtZero: true,
-              grid: {
-                display: false,
-                drawBorder: false,
-              },
-              ticks: {
-                padding: 0,
-              },
+              grid: { display: false, drawBorder: false },
+              ticks: { padding: 5 },
             },
             y: {
-              grid: {
-                display: false,
-                drawBorder: false,
-              },
-              ticks: {
-                padding: 0,
-              },
+              beginAtZero: true,
+              grid: { display: true, drawBorder: false },
+              ticks: { padding: 5 },
             },
           },
           plugins: {
-            legend: {
-              display: false,
-            },
+            legend: { display: false },
             tooltip: {
               callbacks: {
-                label: function (context) {
-                  return `${context.raw} Crime Index`
-                },
+                label: (context) => `${context.raw} Crime Index`,
               },
             },
           },
-          barPercentage: 0.9,
-          categoryPercentage: 0.9,
+          barPercentage: 0.8,
+          categoryPercentage: 0.7,
         },
       })
     })
@@ -245,7 +215,12 @@ export default {
 
 <style scoped>
 #stats-container {
-  background: white;
+  background: #f2f5ea;
+}
+
+#crimeChart {
+  height: 600px !important;
+  width: 100% !important;
 }
 
 .header-icon {
