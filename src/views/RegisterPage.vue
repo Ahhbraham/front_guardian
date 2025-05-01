@@ -1,38 +1,22 @@
 <template>
   <div class="register-container">
-    <form @submit.prevent="handleSubmit">
+    <form @submit.prevent="handleSubmit" enctype="multipart/form-data">
       <div class="form-header">
         <h1>Create Account</h1>
       </div>
 
-      <div class="form-row">
-        <div class="form-item">
-          <div class="input-wrapper">
-            <input
-              type="text"
-              id="firstName"
-              v-model="formData.firstName"
-              required
-              autocomplete="given-name"
-              placeholder="First Name"
-            />
-          </div>
-          <span class="error-message" v-if="errors.firstName">{{ errors.firstName }}</span>
+      <div class="form-item">
+        <div class="input-wrapper">
+          <input
+            type="text"
+            id="name"
+            v-model="formData.name"
+            required
+            autocomplete="name"
+            placeholder="Full Name"
+          />
         </div>
-
-        <div class="form-item">
-          <div class="input-wrapper">
-            <input
-              type="text"
-              id="lastName"
-              v-model="formData.lastName"
-              required
-              autocomplete="family-name"
-              placeholder="Last Name"
-            />
-          </div>
-          <span class="error-message" v-if="errors.lastName">{{ errors.lastName }}</span>
-        </div>
+        <span class="error-message" v-if="errors.name">{{ errors.name }}</span>
       </div>
 
       <div class="form-item">
@@ -52,21 +36,7 @@
       <div class="form-item">
         <div class="input-wrapper">
           <input
-            type="text"
-            id="username"
-            v-model="formData.username"
-            required
-            autocomplete="username"
-            placeholder="Username"
-          />
-        </div>
-        <span class="error-message" v-if="errors.username">{{ errors.username }}</span>
-      </div>
-
-      <div class="form-item">
-        <div class="input-wrapper">
-          <input
-            :type="showPassword ? 'text' : 'password'"
+            type="password"
             id="password"
             v-model="formData.password"
             required
@@ -83,20 +53,40 @@
       <div class="form-item">
         <div class="input-wrapper">
           <input
-            :type="showPassword ? 'text' : 'password'"
-            id="confirmPassword"
-            v-model="formData.confirmPassword"
+            type="password"
+            id="password_confirmation"
+            v-model="formData.password_confirmation"
             required
             autocomplete="new-password"
             placeholder="Confirm Password"
           />
         </div>
-        <span class="error-message" v-if="errors.confirmPassword">{{
-          errors.confirmPassword
+        <span class="error-message" v-if="errors.password_confirmation">{{
+          errors.password_confirmation
         }}</span>
       </div>
 
-      <button id="submit" type="submit">Register</button>
+      <!-- Moved file input to be last before submit button with placeholder -->
+      <div class="form-item">
+        <div class="input-wrapper">
+          <input
+            type="file"
+            id="user_photo"
+            @change="handleFileUpload"
+            accept="image/*"
+            placeholder="Profile pic"
+          />
+        </div>
+        <span class="error-message" v-if="errors.user_photo">{{ errors.user_photo }}</span>
+      </div>
+
+      <button id="submit" type="submit" :disabled="isLoading">
+        {{ isLoading ? 'Registering...' : 'Register' }}
+      </button>
+
+      <div class="registration-error" v-if="registrationError">
+        {{ registrationError }}
+      </div>
 
       <div class="login-link">
         Already have an account? <router-link to="/LoginPage">Sign in</router-link>
@@ -110,14 +100,14 @@ export default {
   name: 'RegisterPage',
   data() {
     return {
-      showPassword: false,
+      isLoading: false,
+      registrationError: '',
       formData: {
-        firstName: '',
-        lastName: '',
+        name: '',
         email: '',
-        username: '',
         password: '',
-        confirmPassword: '',
+        password_confirmation: '',
+        user_photo: null,
       },
       errors: {},
     }
@@ -150,20 +140,15 @@ export default {
     },
   },
   methods: {
-    togglePassword() {
-      this.showPassword = !this.showPassword
+    handleFileUpload(event) {
+      this.formData.user_photo = event.target.files[0]
     },
     validateForm() {
       this.errors = {}
       let isValid = true
 
-      if (!this.formData.firstName.trim()) {
-        this.errors.firstName = 'First name is required'
-        isValid = false
-      }
-
-      if (!this.formData.lastName.trim()) {
-        this.errors.lastName = 'Last name is required'
+      if (!this.formData.name.trim()) {
+        this.errors.name = 'Full name is required'
         isValid = false
       }
 
@@ -175,14 +160,6 @@ export default {
         isValid = false
       }
 
-      if (!this.formData.username.trim()) {
-        this.errors.username = 'Username is required'
-        isValid = false
-      } else if (this.formData.username.length < 4) {
-        this.errors.username = 'Username must be at least 4 characters'
-        isValid = false
-      }
-
       if (!this.formData.password) {
         this.errors.password = 'Password is required'
         isValid = false
@@ -191,17 +168,53 @@ export default {
         isValid = false
       }
 
-      if (this.formData.password !== this.formData.confirmPassword) {
-        this.errors.confirmPassword = 'Passwords do not match'
+      if (this.formData.password !== this.formData.password_confirmation) {
+        this.errors.password_confirmation = 'Passwords do not match'
         isValid = false
       }
 
       return isValid
     },
-    handleSubmit() {
-      if (this.validateForm()) {
-        console.log('Registration data:', this.formData)
-        this.$router.push('/login')
+    async handleSubmit() {
+      if (!this.validateForm()) {
+        return
+      }
+
+      this.isLoading = true
+      this.registrationError = ''
+
+      try {
+        const formData = new FormData()
+        formData.append('name', this.formData.name)
+        formData.append('email', this.formData.email)
+        formData.append('password', this.formData.password)
+        formData.append('password_confirmation', this.formData.password_confirmation)
+        if (this.formData.user_photo) {
+          formData.append('user_photo', this.formData.user_photo)
+        }
+
+        const response = await fetch('http://127.0.1:8000/api/register', {
+          method: 'POST',
+          body: formData,
+        })
+
+        const data = await response.json()
+
+        if (!response.ok) {
+          throw new Error(data.message || 'Registration failed')
+        }
+
+        console.log('Registration successful:', data)
+        this.$router.push('/HomePage')
+      } catch (error) {
+        console.error('Registration error:', error)
+        this.registrationError = error.message || 'Registration failed. Please try again.'
+
+        if (error.response && error.response.data.errors) {
+          this.errors = error.response.data.errors
+        }
+      } finally {
+        this.isLoading = false
       }
     },
   },
@@ -232,7 +245,7 @@ export default {
   border: 3px solid #000c66;
   background-color: transparent;
   border-radius: 4px;
-  color: #ffffff;
+  color: #000;
 }
 
 .form-header {
@@ -244,15 +257,6 @@ export default {
   color: #000c66;
   font-size: 2rem;
   margin-bottom: 0.5rem;
-}
-
-.form-row {
-  display: flex;
-  gap: var(--spacer);
-}
-
-.form-row .form-item {
-  flex: 1;
 }
 
 form {
@@ -277,7 +281,6 @@ input,
 button {
   font-size: 1.2rem;
   font-family: Nunito, sans-serif;
-  color: #e2e2f3;
 }
 
 .error-message {
@@ -318,12 +321,9 @@ button {
   transition: background-color 0.2s;
 }
 
-#submit:hover {
-  background-color: #c9c9e8;
-}
-
-#submit:active {
-  transform: translateY(1px);
+#submit:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
 }
 
 .login-link {
@@ -335,5 +335,11 @@ button {
 .login-link a {
   color: #000c66;
   text-decoration: underline;
+}
+
+.registration-error {
+  color: #ff6b6b;
+  text-align: center;
+  margin-top: 1rem;
 }
 </style>
