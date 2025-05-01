@@ -43,12 +43,11 @@
                 overflow-y: auto;
                 border-left: 1px solid #eee;
                 background: white;
-                padding: 16px;
+                padding: 16px 0 16px 16px;
               "
             >
-              <h2 class="text-h4 font-weight-bold mb-4">Insecurity Worldwide</h2>
-              <canvas id="crimeChart" style="max-height: 400px; margin-bottom: 16px"></canvas>
-              <canvas id="murderChart" style="max-height: 200px"></canvas>
+              <h2 class="text-h4 font-weight-bold mb-4 px-4">Regional Crime Comparison</h2>
+              <canvas id="crimeChart" style="max-height: 500px; width: 100%"></canvas>
             </div>
           </v-col>
         </v-row>
@@ -160,70 +159,66 @@ export default {
   },
   setup() {
     onMounted(() => {
-      // Bar Chart for Crime Index
+      // Horizontal Bar Chart for Crime Index
       const ctxCrime = document.getElementById('crimeChart').getContext('2d')
       new Chart(ctxCrime, {
         type: 'bar',
         data: {
           labels: [
-            'Pretoria',
-            'Durban',
-            'Johannesburg',
-            'Port Elizabeth',
-            'Cape Town',
-            'Lagos',
-            'Windhoek',
-            'Harare',
-            'Nairobi',
-            'Casablanca',
+            'Nairobi (Africa)',
+            'New York (North America)',
+            'London (Europe)',
+            'Sydney (Australia)',
+            'Rio de Janeiro (South America)',
+            'Tokyo (Asia)',
           ],
           datasets: [
             {
               label: 'Crime Index (2024)',
-              data: [81.8, 80.9, 80.7, 77.0, 73.5, 68.0, 67.6, 61.0, 59.1, 54.4],
+              data: [59.1, 48.3, 44.6, 35.2, 68.7, 22.3],
               backgroundColor: [
-                'rgba(255, 99, 132, 0.6)',
-                'rgba(54, 162, 235, 0.6)',
-                'rgba(255, 206, 86, 0.6)',
-                'rgba(75, 192, 192, 0.6)',
-                'rgba(153, 102, 255, 0.6)',
-                'rgba(255, 159, 64, 0.6)',
-                'rgba(199, 199, 199, 0.6)',
-                'rgba(83, 102, 255, 0.6)',
-                'rgba(255, 99, 132, 0.6)',
-                'rgba(54, 162, 235, 0.6)',
+                '#FF6384', // Red
+                '#36A2EB', // Blue
+                '#FFCE56', // Yellow
+                '#4BC0C0', // Teal
+                '#9966FF', // Purple
+                '#FF9F40', // Orange
               ],
-              borderColor: [
-                'rgba(255, 99, 132, 1)',
-                'rgba(54, 162, 235, 1)',
-                'rgba(255, 206, 86, 1)',
-                'rgba(75, 192, 192, 1)',
-                'rgba(153, 102, 255, 1)',
-                'rgba(255, 159, 64, 1)',
-                'rgba(199, 199, 199, 1)',
-                'rgba(83, 102, 255, 1)',
-                'rgba(255, 99, 132, 1)',
-                'rgba(54, 162, 235, 1)',
-              ],
+              borderColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40'],
               borderWidth: 1,
             },
           ],
         },
         options: {
+          indexAxis: 'y',
           responsive: true,
           maintainAspectRatio: false,
+          layout: {
+            padding: {
+              left: 0,
+              right: 0,
+              top: 0,
+              bottom: 0,
+            },
+          },
           scales: {
-            y: {
+            x: {
               beginAtZero: true,
-              title: {
-                display: true,
-                text: 'Crime Index',
+              grid: {
+                display: false,
+                drawBorder: false,
+              },
+              ticks: {
+                padding: 0,
               },
             },
-            x: {
-              title: {
-                display: true,
-                text: 'City',
+            y: {
+              grid: {
+                display: false,
+                drawBorder: false,
+              },
+              ticks: {
+                padding: 0,
               },
             },
           },
@@ -234,50 +229,15 @@ export default {
             tooltip: {
               callbacks: {
                 label: function (context) {
-                  return `${context.label}: ${context.raw}`
+                  return `${context.raw} Crime Index`
                 },
               },
             },
           },
+          barPercentage: 0.9,
+          categoryPercentage: 0.9,
         },
       })
-
-      // Pie Chart for Murders in Cape Town and NYC Subways
-      const ctxMurder = document.getElementById('murderChart').getContext('2d')
-      new Chart(ctxMurder, {
-        type: 'pie',
-        data: {
-          labels: ['Cape Town Murders (2022-2023)', 'NYC Subway Murders (2024)'],
-          datasets: [
-            {
-              data: [2998, 10],
-              backgroundColor: ['rgba(255, 99, 132, 0.6)', 'rgba(54, 162, 235, 0.6)'],
-              borderColor: ['rgba(255, 99, 132, 1)', 'rgba(54, 162, 235, 1)'],
-              borderWidth: 1,
-            },
-          ],
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: {
-            legend: {
-              display: true,
-              position: 'bottom',
-            },
-            tooltip: {
-              callbacks: {
-                label: function (context) {
-                  return `${context.label}: ${context.raw}`
-                },
-              },
-            },
-          },
-        },
-      })
-
-      const statsContainer = document.getElementById('stats-container')
-      statsContainer.style.borderLeft = '1px solid #eee'
     })
   },
 }
@@ -325,15 +285,15 @@ export default {
 }
 
 .card__data {
-  width: 100%; /* Full width to match image */
+  width: 100%;
   background-color: white;
   padding: 2rem;
   box-shadow: 0 8px 24px hsla(0, 0%, 0%, 0.15);
   border-radius: 1.5rem;
   position: absolute;
   bottom: -12rem;
-  left: 0; /* Align to left edge */
-  right: 0; /* Align to right edge */
+  left: 0;
+  right: 0;
   opacity: 0;
   transition: all 0.5s ease;
 }
@@ -357,17 +317,6 @@ export default {
   margin-bottom: 1rem;
 }
 
-.card__button {
-  text-decoration: none;
-  font-size: 1rem;
-  font-weight: 500;
-  color: hsl(82, 60%, 28%);
-}
-
-.card__button:hover {
-  text-decoration: underline;
-}
-
 @media (max-width: 960px) {
   .cards-container {
     grid-template-columns: 1fr;
@@ -376,7 +325,7 @@ export default {
   }
 
   .card__data {
-    width: 100%; /* Full width for mobile */
+    width: 100%;
     left: 0;
     right: 0;
     padding: 1.5rem;
@@ -387,7 +336,7 @@ export default {
   }
 }
 
-/* Added Footer Styles */
+/* Footer Styles */
 .footer-section {
   margin-bottom: 1.5rem;
 }
