@@ -2,16 +2,19 @@ import { createRouter, createWebHistory } from 'vue-router'
 
 import Home from '@/Home.vue'
 import SplashScreen from '@/views/SplashScreen.vue'
+//auth
 import LoginPage from '@/views/LoginPage.vue'
-
-import HomePage from '@/views/HomePage.vue'
 import RegisterPage from '@/views/RegisterPage.vue'
+//
+import HomePage from '@/views/HomePage.vue'
 import FirstAid from '@/views/FirstAid.vue'
 import LiveTrack from '@/views/LiveTrack.vue'
 import GuardianAlert from '@/views/GuardianAlert.vue'
 import GuardianReport from '@/views/GuardianReport.vue'
 import TrustedCircles from '@/views/TrustedCircles.vue'
 import ZonalUpdates from '@/views/ZonalUpdates.vue'
+//abilities
+import PoliceSheet from '@/views/PoliceSheet.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -80,6 +83,11 @@ const router = createRouter({
           path: '/ZonalUpdates',
           name: 'ZonalUpdates',
           component: ZonalUpdates,
+        },
+        {
+          path: '/PoliceSheet',
+          name: 'PoliceSheet',
+          component: PoliceSheet,
         },
       ],
     },

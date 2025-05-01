@@ -18,6 +18,8 @@
       <!-- Login and Register -->
       <v-btn to="/LoginPage" color="#000C66" variant="text">Login</v-btn>
       <v-btn to="/RegisterPage" color="#000C66" variant="text">Join us</v-btn>
+      <!-- abilities -->
+      <v-btn to="/PoliceSheet" color="#000C66" variant="text">PS</v-btn>
     </div>
   </v-app-bar>
 </template>

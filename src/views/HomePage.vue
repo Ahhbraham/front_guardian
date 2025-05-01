@@ -52,7 +52,6 @@
                 <div class="card__data">
                   <span class="card__description">{{ card.description }}</span>
                   <h2 class="card__title">{{ card.title }}</h2>
-                  <a href="#" class="card__button">More</a>
                 </div>
               </div>
             </div>
@@ -135,8 +134,8 @@ export default {
         },
         {
           image: SupportImage,
-          description: 'Confidential help and anonymous reporting for complete post-crisis care',
-          title: 'Support & Reporting',
+          description: 'Anonymous reporting for a better society',
+          title: 'Reporting',
         },
         {
           image: CommunityImage,

@@ -14,7 +14,6 @@
               <div class="button-overlay">
                 <v-btn
                   fab
-                  :class="{ vibrating: !dialog && !countdownActive }"
                   @click="startSOS"
                   style="
                     background-color: #ffffff;
@@ -349,31 +348,6 @@ export default {
 .button-overlay {
   display: flex;
   justify-content: center;
-}
-
-.vibrating {
-  animation: vibrate 0.5s infinite;
-}
-
-@keyframes vibrate {
-  0% {
-    transform: translate(0);
-  }
-  20% {
-    transform: translate(-4px, 4px);
-  }
-  40% {
-    transform: translate(-4px, -4px);
-  }
-  60% {
-    transform: translate(4px, 4px);
-  }
-  80% {
-    transform: translate(4px, -4px);
-  }
-  100% {
-    transform: translate(0);
-  }
 }
 
 /* Countdown Overlay Styles */

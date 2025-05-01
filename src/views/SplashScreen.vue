@@ -55,9 +55,9 @@ onMounted(() => {
     delay: 2700,
   })
 
-  // Auto-redirect to HomePage after all animations complete (3900ms is the longest animation duration)
+  // Auto-redirect to LoginPage after all animations complete (3900ms is the longest animation duration)
   setTimeout(() => {
-    router.push('/HomePage')
+    router.push('/LoginPage')
   }, 4900)
 })
 </script>

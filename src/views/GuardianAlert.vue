@@ -40,7 +40,6 @@
     <div class="button-overlay">
       <v-btn
         fab
-        :class="{ vibrating: !dialog && !countdownActive }"
         @click="showDialog"
         style="
           background-color: #ffffff;
@@ -289,32 +288,6 @@ export default {
   }
   100% {
     transform: translate3d(85px, 0, 0);
-  }
-}
-
-/* Vibrating button animation */
-.vibrating {
-  animation: vibrate 0.5s infinite;
-}
-
-@keyframes vibrate {
-  0% {
-    transform: translate(0);
-  }
-  20% {
-    transform: translate(-4px, 4px);
-  }
-  40% {
-    transform: translate(-4px, -4px);
-  }
-  60% {
-    transform: translate(4px, 4px);
-  }
-  80% {
-    transform: translate(4px, -4px);
-  }
-  100% {
-    transform: translate(0);
   }
 }
 
