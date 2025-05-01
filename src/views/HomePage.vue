@@ -34,9 +34,22 @@
             </div>
           </v-col>
 
-          <!-- Right Column with Map -->
+          <!-- Right Column with Crime Statistics Charts -->
           <v-col cols="12" md="6" class="pa-0">
-            <div id="map-container" style="height: 100%"></div>
+            <div
+              id="stats-container"
+              style="
+                height: 100%;
+                overflow-y: auto;
+                border-left: 1px solid #eee;
+                background: white;
+                padding: 16px;
+              "
+            >
+              <h2 class="text-h4 font-weight-bold mb-4">Insecurity Worldwide</h2>
+              <canvas id="crimeChart" style="max-height: 400px; margin-bottom: 16px"></canvas>
+              <canvas id="murderChart" style="max-height: 200px"></canvas>
+            </div>
           </v-col>
         </v-row>
 
@@ -95,7 +108,7 @@
             </v-row>
             <v-divider class="my-4" style="border-color: #8593ff"></v-divider>
             <div class="text-center white--text py-4">
-              &copy; {{ new Date().getFullYear() }} Guardian. All rights reserved.
+              © {{ new Date().getFullYear() }} Guardian. All rights reserved.
             </div>
           </v-container>
         </v-footer>
@@ -106,8 +119,7 @@
 
 <script>
 import { onMounted } from 'vue'
-import L from 'leaflet'
-import 'leaflet/dist/leaflet.css'
+import Chart from 'chart.js/auto'
 
 // Import images using ES modules
 import MapImage from '../assets/Map.jpg'
@@ -148,28 +160,131 @@ export default {
   },
   setup() {
     onMounted(() => {
-      const map = L.map('map-container', {
-        zoomControl: false,
-        attributionControl: false,
-      }).setView([51.505, -0.09], 13)
+      // Bar Chart for Crime Index
+      const ctxCrime = document.getElementById('crimeChart').getContext('2d')
+      new Chart(ctxCrime, {
+        type: 'bar',
+        data: {
+          labels: [
+            'Pretoria',
+            'Durban',
+            'Johannesburg',
+            'Port Elizabeth',
+            'Cape Town',
+            'Lagos',
+            'Windhoek',
+            'Harare',
+            'Nairobi',
+            'Casablanca',
+          ],
+          datasets: [
+            {
+              label: 'Crime Index (2024)',
+              data: [81.8, 80.9, 80.7, 77.0, 73.5, 68.0, 67.6, 61.0, 59.1, 54.4],
+              backgroundColor: [
+                'rgba(255, 99, 132, 0.6)',
+                'rgba(54, 162, 235, 0.6)',
+                'rgba(255, 206, 86, 0.6)',
+                'rgba(75, 192, 192, 0.6)',
+                'rgba(153, 102, 255, 0.6)',
+                'rgba(255, 159, 64, 0.6)',
+                'rgba(199, 199, 199, 0.6)',
+                'rgba(83, 102, 255, 0.6)',
+                'rgba(255, 99, 132, 0.6)',
+                'rgba(54, 162, 235, 0.6)',
+              ],
+              borderColor: [
+                'rgba(255, 99, 132, 1)',
+                'rgba(54, 162, 235, 1)',
+                'rgba(255, 206, 86, 1)',
+                'rgba(75, 192, 192, 1)',
+                'rgba(153, 102, 255, 1)',
+                'rgba(255, 159, 64, 1)',
+                'rgba(199, 199, 199, 1)',
+                'rgba(83, 102, 255, 1)',
+                'rgba(255, 99, 132, 1)',
+                'rgba(54, 162, 235, 1)',
+              ],
+              borderWidth: 1,
+            },
+          ],
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            y: {
+              beginAtZero: true,
+              title: {
+                display: true,
+                text: 'Crime Index',
+              },
+            },
+            x: {
+              title: {
+                display: true,
+                text: 'City',
+              },
+            },
+          },
+          plugins: {
+            legend: {
+              display: false,
+            },
+            tooltip: {
+              callbacks: {
+                label: function (context) {
+                  return `${context.label}: ${context.raw}`
+                },
+              },
+            },
+          },
+        },
+      })
 
-      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        className: 'map-tiles',
-      }).addTo(map)
+      // Pie Chart for Murders in Cape Town and NYC Subways
+      const ctxMurder = document.getElementById('murderChart').getContext('2d')
+      new Chart(ctxMurder, {
+        type: 'pie',
+        data: {
+          labels: ['Cape Town Murders (2022-2023)', 'NYC Subway Murders (2024)'],
+          datasets: [
+            {
+              data: [2998, 10],
+              backgroundColor: ['rgba(255, 99, 132, 0.6)', 'rgba(54, 162, 235, 0.6)'],
+              borderColor: ['rgba(255, 99, 132, 1)', 'rgba(54, 162, 235, 1)'],
+              borderWidth: 1,
+            },
+          ],
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              display: true,
+              position: 'bottom',
+            },
+            tooltip: {
+              callbacks: {
+                label: function (context) {
+                  return `${context.label}: ${context.raw}`
+                },
+              },
+            },
+          },
+        },
+      })
 
-      const mapContainer = document.getElementById('map-container')
-      mapContainer.style.borderLeft = '1px solid #eee'
+      const statsContainer = document.getElementById('stats-container')
+      statsContainer.style.borderLeft = '1px solid #eee'
     })
   },
 }
 </script>
 
 <style scoped>
-.map-tiles {
-  filter: brightness(0.98) contrast(1.05);
-}
-
-#map-container {
+#stats-container {
   background: white;
 }
 
