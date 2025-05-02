@@ -18,7 +18,10 @@ import PoliceAbility from '@/views/PoliceAbility.vue'
 import AmbulanceAbility from '@/views/AmbulanceAbility.vue'
 import FireServicesAbility from '@/views/FireServicesAbility.vue'
 import Admin from '@/views/Admin.vue'
+//confirmation
+import GrConfirmation from '@/views/GrConfirmation.vue'
 //
+
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
@@ -87,6 +90,7 @@ const router = createRouter({
           name: 'ZonalUpdates',
           component: ZonalUpdates,
         },
+
         {
           path: '/PoliceAbility',
           name: 'PoliceAbility',
@@ -106,6 +110,11 @@ const router = createRouter({
           path: '/Admin',
           name: 'Admin',
           component: Admin,
+        },
+        {
+          path: '/GrConfirmation',
+          name: 'GrConfirmation',
+          component: GrConfirmation,
         },
       ],
     },

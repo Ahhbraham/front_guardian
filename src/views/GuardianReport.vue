@@ -226,9 +226,23 @@
                           padding: 0.75rem;
                           color: #000c66;
                           background-color: #e2e2f3;
+                          position: relative;
                         "
+                        :disabled="isSubmitting"
                       >
-                        Submit Report
+                        <span v-if="!isSubmitting">Submit Report</span>
+                        <div v-else class="spinner">
+                          <div></div>
+                          <div></div>
+                          <div></div>
+                          <div></div>
+                          <div></div>
+                          <div></div>
+                          <div></div>
+                          <div></div>
+                          <div></div>
+                          <div></div>
+                        </div>
                       </v-btn>
                     </v-col>
                   </v-row>
@@ -268,6 +282,7 @@ export default {
       errors: {},
       crime_types: ['Theft', 'Vandalism', 'Harassment', 'Fraud', 'Other'],
       dateMenu: false,
+      isSubmitting: false,
       attachmentRules: [
         (files) =>
           !files ||
@@ -330,9 +345,9 @@ export default {
     },
     async handleSubmit() {
       if (this.validateForm()) {
+        this.isSubmitting = true
         try {
           const formData = new FormData()
-          // Map frontend field names to backend expected names
           formData.append('first_name', this.formData.firstName)
           formData.append('last_name', this.formData.lastName)
           formData.append('email', this.formData.email)
@@ -350,29 +365,39 @@ export default {
           this.formData.attachments.forEach((file) => formData.append('attachments[]', file))
           formData.append('witnessName', this.formData.witnessName)
           formData.append('witnessContact', this.formData.witnessContact)
-          // Convert booleans to integers (1 or 0) for backend
           formData.append('allowContact', this.formData.allowContact ? 1 : 0)
           formData.append('consent', this.formData.consent ? 1 : 0)
 
+          console.log('Sending form data to /reports')
           const response = await api.post('/reports', formData, {
             headers: {
               'Content-Type': 'multipart/form-data',
             },
           })
 
-          if (response.status === 200) {
-            console.log('Report submitted successfully!')
-            this.$router.push('/confirmation')
+          console.log('API response status:', response.status)
+          if (response.status === 200 || response.status === 201) {
+            console.log('Report submitted successfully! Redirecting to /GrConfirmation')
+            this.$router.push('/GrConfirmation')
           } else {
-            this.errors = { general: 'Something went wrong. Please try again.' }
+            console.error('Unexpected response status:', response.status)
+            this.errors = { general: 'Submission failed. Please try again.' }
           }
         } catch (error) {
-          console.error('Error submitting report:', error)
-          if (error.response && error.response.data.errors) {
-            this.errors = error.response.data.errors
+          console.error('Submission error:', error.message)
+          if (error.response) {
+            console.error('Error response:', error.response.data)
+            this.errors = error.response.data.errors || {
+              general: 'Submission failed: ' + error.response.data.message,
+            }
           } else {
-            this.errors = { general: 'Failed to submit report. Please try again.' }
+            console.error('Network or other error:', error)
+            this.errors = {
+              general: 'Failed to submit report. Please check your connection and try again.',
+            }
           }
+        } finally {
+          this.isSubmitting = false
         }
       }
     },
@@ -403,6 +428,13 @@ export default {
 .v-file-input {
   margin-bottom: 8px;
 }
+.submit-btn {
+  position: relative;
+}
+.submit-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
 .submit-btn:active {
   transform: translateY(1px);
 }
@@ -413,5 +445,88 @@ export default {
 .text-h4 {
   color: #000c66;
   font-weight: 700;
+}
+.spinner {
+  position: absolute;
+  width: 9px;
+  height: 9px;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+.spinner div {
+  position: absolute;
+  width: 50%;
+  height: 150%;
+  background: #000000;
+  transform: rotate(calc(var(--rotation) * 1deg)) translate(0, calc(var(--translation) * 1%));
+  animation: spinner-fzua35 1s calc(var(--delay) * 1s) infinite ease;
+}
+.spinner div:nth-child(1) {
+  --delay: 0.1;
+  --rotation: 36;
+  --translation: 150;
+}
+.spinner div:nth-child(2) {
+  --delay: 0.2;
+  --rotation: 72;
+  --translation: 150;
+}
+.spinner div:nth-child(3) {
+  --delay: 0.3;
+  --rotation: 108;
+  --translation: 150;
+}
+.spinner div:nth-child(4) {
+  --delay: 0.4;
+  --rotation: 144;
+  --translation: 150;
+}
+.spinner div:nth-child(5) {
+  --delay: 0.5;
+  --rotation: 180;
+  --translation: 150;
+}
+.spinner div:nth-child(6) {
+  --delay: 0.6;
+  --rotation: 216;
+  --translation: 150;
+}
+.spinner div:nth-child(7) {
+  --delay: 0.7;
+  --rotation: 252;
+  --translation: 150;
+}
+.spinner div:nth-child(8) {
+  --delay: 0.8;
+  --rotation: 288;
+  --translation: 150;
+}
+.spinner div:nth-child(9) {
+  --delay: 0.9;
+  --rotation: 324;
+  --translation: 150;
+}
+.spinner div:nth-child(10) {
+  --delay: 1;
+  --rotation: 360;
+  --translation: 150;
+}
+@keyframes spinner-fzua35 {
+  0%,
+  10%,
+  20%,
+  30%,
+  50%,
+  60%,
+  70%,
+  80%,
+  90%,
+  100% {
+    transform: rotate(calc(var(--rotation) * 1deg)) translate(0, calc(var(--translation) * 1%));
+  }
+  50% {
+    transform: rotate(calc(var(--rotation) * 1deg)) translate(0, calc(var(--translation) * 1.5%));
+  }
 }
 </style>
