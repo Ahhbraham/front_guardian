@@ -31,7 +31,7 @@
                         dense
                         color="#000c66"
                         :rules="[(v) => !!v || 'First name is required']"
-                        :error-messages="errors.firstName"
+                        :error-messages="errors.first_name"
                       />
                     </v-col>
                     <v-col cols="12" md="6">
@@ -42,7 +42,7 @@
                         dense
                         color="#000c66"
                         :rules="[(v) => !!v || 'Last name is required']"
-                        :error-messages="errors.lastName"
+                        :error-messages="errors.last_name"
                       />
                     </v-col>
                   </v-row>
@@ -255,8 +255,8 @@ export default {
         email: '',
         phone: '',
         address: '',
-        crime_type: null,
-        incident_date: null,
+        crime_type: '',
+        incident_date: '',
         incident_location: '',
         description: '',
         attachments: [],
@@ -285,12 +285,13 @@ export default {
     validateForm() {
       this.errors = {}
       let isValid = true
+
       if (!this.formData.firstName) {
-        this.errors.firstName = 'First name is required'
+        this.errors.first_name = 'First name is required'
         isValid = false
       }
       if (!this.formData.lastName) {
-        this.errors.lastName = 'Last name is required'
+        this.errors.last_name = 'Last name is required'
         isValid = false
       }
       if (!this.formData.email) {
@@ -324,26 +325,34 @@ export default {
         this.errors.consent = 'You must confirm the report is truthful'
         isValid = false
       }
+
       return isValid
     },
     async handleSubmit() {
       if (this.validateForm()) {
         try {
           const formData = new FormData()
-          Object.keys(this.formData).forEach((key) => {
-            if (key === 'attachments') {
-              this.formData.attachments.forEach((file) => formData.append('attachments[]', file))
-            } else if (key === 'incident_date') {
-              formData.append(
-                key,
-                this.formData.incident_date
-                  ? new Date(this.formData.incident_date).toISOString().split('T')[0]
-                  : '',
-              )
-            } else {
-              formData.append(key, this.formData[key])
-            }
-          })
+          // Map frontend field names to backend expected names
+          formData.append('first_name', this.formData.firstName)
+          formData.append('last_name', this.formData.lastName)
+          formData.append('email', this.formData.email)
+          formData.append('phone', this.formData.phone)
+          formData.append('address', this.formData.address)
+          formData.append('crime_type', this.formData.crime_type)
+          formData.append(
+            'incident_date',
+            this.formData.incident_date
+              ? new Date(this.formData.incident_date).toISOString().split('T')[0]
+              : '',
+          )
+          formData.append('incident_location', this.formData.incident_location)
+          formData.append('description', this.formData.description)
+          this.formData.attachments.forEach((file) => formData.append('attachments[]', file))
+          formData.append('witnessName', this.formData.witnessName)
+          formData.append('witnessContact', this.formData.witnessContact)
+          // Convert booleans to integers (1 or 0) for backend
+          formData.append('allowContact', this.formData.allowContact ? 1 : 0)
+          formData.append('consent', this.formData.consent ? 1 : 0)
 
           const response = await api.post('/reports', formData, {
             headers: {
@@ -352,16 +361,18 @@ export default {
           })
 
           if (response.status === 200) {
-            console.log('Report submitted:', response.data)
+            console.log('Report submitted successfully!')
             this.$router.push('/confirmation')
           } else {
-            this.errors = response.data.errors || {
-              general: response.data.message || 'An error occurred',
-            }
+            this.errors = { general: 'Something went wrong. Please try again.' }
           }
         } catch (error) {
-          console.error('Submission failed:', error)
-          this.errors = { general: 'Submission failed. Please try again.' }
+          console.error('Error submitting report:', error)
+          if (error.response && error.response.data.errors) {
+            this.errors = error.response.data.errors
+          } else {
+            this.errors = { general: 'Failed to submit report. Please try again.' }
+          }
         }
       }
     },
@@ -371,7 +382,6 @@ export default {
 
 <style scoped>
 .full-screen-container {
-  --spacer: 1.5rem;
   padding: 24px;
   min-height: 100vh;
   background: #f5f5f5;
