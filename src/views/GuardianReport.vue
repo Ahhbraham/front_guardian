@@ -227,21 +227,16 @@
                           color: #000c66;
                           background-color: #e2e2f3;
                           position: relative;
+                          min-height: 50px;
                         "
                         :disabled="isSubmitting"
                       >
                         <span v-if="!isSubmitting">Submit Report</span>
-                        <div v-else class="spinner">
-                          <div></div>
-                          <div></div>
-                          <div></div>
-                          <div></div>
-                          <div></div>
-                          <div></div>
-                          <div></div>
-                          <div></div>
-                          <div></div>
-                          <div></div>
+                        <div v-else class="load-row">
+                          <span></span>
+                          <span></span>
+                          <span></span>
+                          <span></span>
                         </div>
                       </v-btn>
                     </v-col>
@@ -345,6 +340,7 @@ export default {
     },
     async handleSubmit() {
       if (this.validateForm()) {
+        console.log('Setting isSubmitting to true, showing loader')
         this.isSubmitting = true
         try {
           const formData = new FormData()
@@ -397,6 +393,7 @@ export default {
             }
           }
         } finally {
+          console.log('Setting isSubmitting to false, hiding loader')
           this.isSubmitting = false
         }
       }
@@ -430,6 +427,7 @@ export default {
 }
 .submit-btn {
   position: relative;
+  overflow: visible;
 }
 .submit-btn:disabled {
   opacity: 0.6;
@@ -446,87 +444,42 @@ export default {
   color: #000c66;
   font-weight: 700;
 }
-.spinner {
+.load-row {
+  width: 100px;
+  height: 50px;
+  line-height: 50px;
+  text-align: center;
   position: absolute;
-  width: 9px;
-  height: 9px;
   left: 50%;
   top: 50%;
-  transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%) scale(0.5);
 }
-.spinner div {
-  position: absolute;
-  width: 50%;
-  height: 150%;
-  background: #000000;
-  transform: rotate(calc(var(--rotation) * 1deg)) translate(0, calc(var(--translation) * 1%));
-  animation: spinner-fzua35 1s calc(var(--delay) * 1s) infinite ease;
+.load-row span {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  background: #f76002;
+  border-radius: 50px;
+  animation: up-down6 0.5s ease-in infinite alternate;
 }
-.spinner div:nth-child(1) {
-  --delay: 0.1;
-  --rotation: 36;
-  --translation: 150;
+.load-row span:nth-child(2) {
+  background: #e85b04c4;
+  animation-delay: 0.16s;
 }
-.spinner div:nth-child(2) {
-  --delay: 0.2;
-  --rotation: 72;
-  --translation: 150;
+.load-row span:nth-child(3) {
+  background: #e85b0491;
+  animation-delay: 0.32s;
 }
-.spinner div:nth-child(3) {
-  --delay: 0.3;
-  --rotation: 108;
-  --translation: 150;
+.load-row span:nth-child(4) {
+  background: #e85b0456;
+  animation-delay: 0.48s;
 }
-.spinner div:nth-child(4) {
-  --delay: 0.4;
-  --rotation: 144;
-  --translation: 150;
-}
-.spinner div:nth-child(5) {
-  --delay: 0.5;
-  --rotation: 180;
-  --translation: 150;
-}
-.spinner div:nth-child(6) {
-  --delay: 0.6;
-  --rotation: 216;
-  --translation: 150;
-}
-.spinner div:nth-child(7) {
-  --delay: 0.7;
-  --rotation: 252;
-  --translation: 150;
-}
-.spinner div:nth-child(8) {
-  --delay: 0.8;
-  --rotation: 288;
-  --translation: 150;
-}
-.spinner div:nth-child(9) {
-  --delay: 0.9;
-  --rotation: 324;
-  --translation: 150;
-}
-.spinner div:nth-child(10) {
-  --delay: 1;
-  --rotation: 360;
-  --translation: 150;
-}
-@keyframes spinner-fzua35 {
-  0%,
-  10%,
-  20%,
-  30%,
-  50%,
-  60%,
-  70%,
-  80%,
-  90%,
-  100% {
-    transform: rotate(calc(var(--rotation) * 1deg)) translate(0, calc(var(--translation) * 1%));
+@keyframes up-down6 {
+  0% {
+    transform: translateY(-10px);
   }
-  50% {
-    transform: rotate(calc(var(--rotation) * 1deg)) translate(0, calc(var(--translation) * 1.5%));
+  100% {
+    transform: translateY(10px);
   }
 }
 </style>
