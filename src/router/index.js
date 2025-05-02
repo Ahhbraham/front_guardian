@@ -14,9 +14,9 @@ import GuardianReport from '@/views/GuardianReport.vue'
 import TrustedCircles from '@/views/TrustedCircles.vue'
 import ZonalUpdates from '@/views/ZonalUpdates.vue'
 //abilities
-import PoliceAbility from '@/views/PoliceAbility.vue'
-import AmbulanceAbility from '@/views/AmbulanceAbility.vue'
-import FireServicesAbility from '@/views/FireServicesAbility.vue'
+import PoliceDashboard from '@/views/PoliceDashboard.vue'
+import AmbulanceDashboard from '@/views/AmbulanceDashboard.vue'
+import FireServicesDashboard from '@/views/FireServicesDashboard.vue'
 import Admin from '@/views/Admin.vue'
 //confirmation
 import GrConfirmation from '@/views/GrConfirmation.vue'
@@ -92,19 +92,19 @@ const router = createRouter({
         },
 
         {
-          path: '/PoliceAbility',
-          name: 'PoliceAbility',
-          component: PoliceAbility,
+          path: '/PoliceDashboard',
+          name: 'PoliceDashboard',
+          component: PoliceDashboard,
         },
         {
-          path: '/AmbulanceAbility',
-          name: 'AmbulanceAbility',
-          component: AmbulanceAbility,
+          path: '/AmbulanceDashboard',
+          name: 'AmbulanceDashboard',
+          component: AmbulanceDashboard,
         },
         {
-          path: '/FireServicesAbility',
-          name: 'FireServicesAbility',
-          component: FireServicesAbility,
+          path: '/FireServicesDashboard',
+          name: 'FireServicesDashboard',
+          component: FireServicesDashboard,
         },
         {
           path: '/Admin',
