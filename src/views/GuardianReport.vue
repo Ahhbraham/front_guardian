@@ -30,7 +30,6 @@
                         outlined
                         dense
                         color="#000c66"
-                        :disabled="formData.anonymous"
                         :rules="[(v) => !!v || 'First name is required']"
                         :error-messages="errors.firstName"
                       />
@@ -42,7 +41,6 @@
                         outlined
                         dense
                         color="#000c66"
-                        :disabled="formData.anonymous"
                         :rules="[(v) => !!v || 'Last name is required']"
                         :error-messages="errors.lastName"
                       />
@@ -56,7 +54,6 @@
                         outlined
                         dense
                         color="#000c66"
-                        :disabled="formData.anonymous"
                         :rules="emailRules"
                         :error-messages="errors.email"
                       />
@@ -68,7 +65,6 @@
                         outlined
                         dense
                         color="#000c66"
-                        :disabled="formData.anonymous"
                         :rules="[(v) => !!v || 'Phone number is required']"
                         :error-messages="errors.phone"
                       />
@@ -82,28 +78,21 @@
                         outlined
                         dense
                         color="#000c66"
-                        :disabled="formData.anonymous"
                       />
                     </v-col>
                   </v-row>
-                  <v-checkbox
-                    v-model="formData.anonymous"
-                    label="Submit anonymously (if permitted by law)"
-                    color="#000c66"
-                    class="mt-0"
-                  />
                   <h2 class="text-h5 mb-4 mt-6">Incident Details</h2>
                   <v-row>
                     <v-col cols="12">
                       <v-select
-                        v-model="formData.crimeType"
-                        :items="crimeTypes"
+                        v-model="formData.crime_type"
+                        :items="crime_types"
                         label="Crime Type"
                         outlined
                         dense
                         color="#000c66"
                         :rules="[(v) => !!v || 'Crime type is required']"
-                        :error-messages="errors.crimeType"
+                        :error-messages="errors.crime_type"
                       />
                     </v-col>
                   </v-row>
@@ -118,7 +107,7 @@
                       >
                         <template v-slot:activator="{ props }">
                           <v-text-field
-                            v-model="formData.incidentDate"
+                            v-model="formData.incident_date"
                             label="Incident Date"
                             prepend-icon="mdi-calendar"
                             readonly
@@ -127,11 +116,11 @@
                             color="#000c66"
                             v-bind="props"
                             :rules="[(v) => !!v || 'Date is required']"
-                            :error-messages="errors.incidentDate"
+                            :error-messages="errors.incident_date"
                           />
                         </template>
                         <v-date-picker
-                          v-model="formData.incidentDate"
+                          v-model="formData.incident_date"
                           color="#E2E2F3"
                           @update:model-value="dateMenu = false"
                         />
@@ -141,24 +130,16 @@
                   <v-row>
                     <v-col cols="12">
                       <v-text-field
-                        v-model="formData.incidentLocation"
+                        v-model="formData.incident_location"
                         label="Incident Location"
                         outlined
                         dense
                         color="#000c66"
-                        :disabled="formData.unknownLocation"
                         :rules="[(v) => !!v || 'Location is required']"
-                        :error-messages="errors.incidentLocation"
+                        :error-messages="errors.incident_location"
                       />
                     </v-col>
                   </v-row>
-                  <v-checkbox
-                    v-model="formData.unknownLocation"
-                    label="Unknown location"
-                    color="#000c66"
-                    class="mt-0"
-                    @change="formData.incidentLocation = $event ? '' : formData.incidentLocation"
-                  />
                   <v-row>
                     <v-col cols="12">
                       <v-textarea
@@ -262,6 +243,8 @@
 </template>
 
 <script>
+import api from '../services/api'
+
 export default {
   name: 'GuardianAlert',
   data() {
@@ -272,11 +255,9 @@ export default {
         email: '',
         phone: '',
         address: '',
-        anonymous: false,
-        crimeType: null,
-        incidentDate: null,
-        incidentLocation: '',
-        unknownLocation: false,
+        crime_type: null,
+        incident_date: null,
+        incident_location: '',
         description: '',
         attachments: [],
         witnessName: '',
@@ -285,7 +266,7 @@ export default {
         consent: false,
       },
       errors: {},
-      crimeTypes: ['Theft', 'Vandalism', 'Harassment', 'Fraud', 'Other'],
+      crime_types: ['Theft', 'Vandalism', 'Harassment', 'Fraud', 'Other'],
       dateMenu: false,
       attachmentRules: [
         (files) =>
@@ -304,37 +285,35 @@ export default {
     validateForm() {
       this.errors = {}
       let isValid = true
-      if (!this.formData.anonymous) {
-        if (!this.formData.firstName.trim()) {
-          this.errors.firstName = 'First name is required'
-          isValid = false
-        }
-        if (!this.formData.lastName.trim()) {
-          this.errors.lastName = 'Last name is required'
-          isValid = false
-        }
-        if (!this.formData.email.trim()) {
-          this.errors.email = 'Email is required'
-          isValid = false
-        } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(this.formData.email)) {
-          this.errors.email = 'Please enter a valid email'
-          isValid = false
-        }
-        if (!this.formData.phone.trim()) {
-          this.errors.phone = 'Phone number is required'
-          isValid = false
-        }
-      }
-      if (!this.formData.crimeType) {
-        this.errors.crimeType = 'Crime type is required'
+      if (!this.formData.firstName) {
+        this.errors.firstName = 'First name is required'
         isValid = false
       }
-      if (!this.formData.incidentDate) {
-        this.errors.incidentDate = 'Incident date is required'
+      if (!this.formData.lastName) {
+        this.errors.lastName = 'Last name is required'
         isValid = false
       }
-      if (!this.formData.incidentLocation && !this.formData.unknownLocation) {
-        this.errors.incidentLocation = 'Incident location is required'
+      if (!this.formData.email) {
+        this.errors.email = 'Email is required'
+        isValid = false
+      } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(this.formData.email)) {
+        this.errors.email = 'Please enter a valid email'
+        isValid = false
+      }
+      if (!this.formData.phone) {
+        this.errors.phone = 'Phone number is required'
+        isValid = false
+      }
+      if (!this.formData.crime_type) {
+        this.errors.crime_type = 'Crime type is required'
+        isValid = false
+      }
+      if (!this.formData.incident_date) {
+        this.errors.incident_date = 'Incident date is required'
+        isValid = false
+      }
+      if (!this.formData.incident_location) {
+        this.errors.incident_location = 'Incident location is required'
         isValid = false
       }
       if (!this.formData.description.trim()) {
@@ -347,10 +326,43 @@ export default {
       }
       return isValid
     },
-    handleSubmit() {
+    async handleSubmit() {
       if (this.validateForm()) {
-        console.log('Report data:', this.formData)
-        this.$router.push('/confirmation')
+        try {
+          const formData = new FormData()
+          Object.keys(this.formData).forEach((key) => {
+            if (key === 'attachments') {
+              this.formData.attachments.forEach((file) => formData.append('attachments[]', file))
+            } else if (key === 'incident_date') {
+              formData.append(
+                key,
+                this.formData.incident_date
+                  ? new Date(this.formData.incident_date).toISOString().split('T')[0]
+                  : '',
+              )
+            } else {
+              formData.append(key, this.formData[key])
+            }
+          })
+
+          const response = await api.post('/reports', formData, {
+            headers: {
+              'Content-Type': 'multipart/form-data',
+            },
+          })
+
+          if (response.status === 200) {
+            console.log('Report submitted:', response.data)
+            this.$router.push('/confirmation')
+          } else {
+            this.errors = response.data.errors || {
+              general: response.data.message || 'An error occurred',
+            }
+          }
+        } catch (error) {
+          console.error('Submission failed:', error)
+          this.errors = { general: 'Submission failed. Please try again.' }
+        }
       }
     },
   },
