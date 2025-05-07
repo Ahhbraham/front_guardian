@@ -1,110 +1,95 @@
 <template>
   <v-app>
-    <v-main>
-      <v-container fluid class="full-screen-container">
-        <v-row justify="center" class="mb-6">
-          <v-col cols="12" sm="6" md="4" class="text-center">
-            <v-img src="../assets/header.png" max-height="80" max-width="240" class="mx-auto" />
-          </v-col>
-        </v-row>
-        <v-row>
-          <v-col cols="12">
-            <h1 class="text-h4 mb-4 text-center">Police Report Dashboard</h1>
-            <p class="mb-4 text-center">
-              View all non-emergency crime reports submitted through the Guardian Alert system.
-            </p>
-          </v-col>
-        </v-row>
-        <v-row justify="center">
-          <v-col cols="12" md="10" lg="8" xl="8">
-            <v-card class="reports-container">
-              <v-card-text>
-                <v-progress-linear
-                  v-if="isLoading"
-                  indeterminate
-                  color="#000c66"
-                  class="mb-4"
-                ></v-progress-linear>
-                <v-alert v-if="error" type="error" class="mb-4">
-                  {{ error }}
-                </v-alert>
-                <div v-if="reports.length">
-                  <v-expansion-panels v-model="expandedPanels" multiple>
-                    <v-expansion-panel
-                      v-for="(report, index) in reports"
-                      :key="report.id || index"
-                      class="mb-2"
-                    >
-                      <v-expansion-panel-title>
-                        <v-row no-gutters>
-                          <v-col cols="6">
-                            <strong>{{ report.first_name }} {{ report.last_name }}</strong>
-                          </v-col>
-                          <v-col cols="6" class="text-right">
-                            {{ report.crime_type }} - {{ formatDate(report.incident_date) }}
-                          </v-col>
-                        </v-row>
-                      </v-expansion-panel-title>
-                      <v-expansion-panel-content>
-                        <v-card flat>
-                          <v-card-text>
-                            <p><strong>Report ID:</strong> {{ report.id }}</p>
-                            <p>
-                              <strong>Submitted:</strong> {{ formatDateTime(report.created_at) }}
-                            </p>
-                            <p><strong>Email:</strong> {{ report.email }}</p>
-                            <p><strong>Phone:</strong> {{ report.phone }}</p>
-                            <p><strong>Address:</strong> {{ report.address || 'N/A' }}</p>
-                            <p>
-                              <strong>Incident Date:</strong> {{ formatDate(report.incident_date) }}
-                            </p>
-                            <p>
-                              <strong>Incident Location:</strong> {{ report.incident_location }}
-                            </p>
-                            <p><strong>Description:</strong> {{ report.description }}</p>
-                            <p>
-                              <strong>Witness Name:</strong>
-                              {{ report.witness_name || report.witnessName || 'N/A' }}
-                            </p>
-                            <p>
-                              <strong>Witness Contact:</strong>
-                              {{ report.witness_contact || report.witnessContact || 'N/A' }}
-                            </p>
-                            <p>
-                              <strong>Allow Contact:</strong>
-                              {{ report.allow_contact || report.allowContact ? 'Yes' : 'No' }}
-                            </p>
-                            <p><strong>Consent:</strong> {{ report.consent ? 'Yes' : 'No' }}</p>
+    <v-main class="federal-blue">
+      <v-row justify="center" class="mb-6">
+        <v-col cols="12" sm="6" md="4" class="text-center">
+          <img
+            src="../assets/header.png"
+            style="max-height: 120px; max-width: 360px"
+            class="mx-auto"
+          />
+        </v-col>
+      </v-row>
 
-                            <div v-if="report.attachments && report.attachments.length">
-                              <strong>Attachments:</strong>
-                              <ul class="attachment-list">
-                                <li v-for="(attachment, idx) in report.attachments" :key="idx">
-                                  <a
-                                    :href="getAttachmentUrl(attachment)"
-                                    target="_blank"
-                                    class="attachment-link"
-                                  >
-                                    <v-icon small class="mr-1">mdi-paperclip</v-icon>
-                                    {{ getAttachmentName(attachment) }}
-                                  </a>
-                                </li>
-                              </ul>
-                            </div>
-                          </v-card-text>
-                        </v-card>
-                      </v-expansion-panel-content>
-                    </v-expansion-panel>
-                  </v-expansion-panels>
+      <v-progress-linear
+        v-if="isLoading"
+        indeterminate
+        color="#E2E2F3"
+        class="mb-4 mx-auto"
+        style="max-width: 600px"
+      ></v-progress-linear>
+      <v-alert v-if="error" type="error" class="mb-4 mx-auto" style="max-width: 600px">
+        {{ error }}
+      </v-alert>
+
+      <v-row justify="center" v-if="reports.length">
+        <v-col cols="12" md="10" lg="8" xl="8">
+          <div class="reports-grid">
+            <div
+              v-for="(report, index) in sortedReports"
+              :key="report.id || index"
+              class="flip-card"
+            >
+              <div class="flip-card-inner">
+                <div class="flip-card-front">
+                  <div class="title">{{ report.first_name }} {{ report.last_name }}</div>
+                  <p>{{ report.crime_type }}</p>
+                  <p>{{ formatDate(report.incident_date) }}</p>
                 </div>
-                <v-alert v-else-if="!isLoading && !error" type="info" class="mt-4">
-                  No reports found.
-                </v-alert>
-              </v-card-text>
-            </v-card>
-          </v-col>
-        </v-row>
-      </v-container>
+                <div class="flip-card-back">
+                  <div class="report-details">
+                    <p><strong>Report ID:</strong> {{ report.id }}</p>
+                    <p><strong>Submitted:</strong> {{ formatDateTime(report.created_at) }}</p>
+                    <p><strong>Email:</strong> {{ report.email }}</p>
+                    <p><strong>Phone:</strong> {{ report.phone }}</p>
+                    <p><strong>Address:</strong> {{ report.address || 'N/A' }}</p>
+                    <p><strong>Incident Date:</strong> {{ formatDate(report.incident_date) }}</p>
+                    <p><strong>Incident Location:</strong> {{ report.incident_location }}</p>
+                    <p><strong>Description:</strong> {{ report.description }}</p>
+                    <p>
+                      <strong>Witness Name:</strong>
+                      {{ report.witness_name || report.witnessName || 'N/A' }}
+                    </p>
+                    <p>
+                      <strong>Witness Contact:</strong>
+                      {{ report.witness_contact || report.witnessContact || 'N/A' }}
+                    </p>
+                    <p>
+                      <strong>Allow Contact:</strong>
+                      {{ report.allow_contact || report.allowContact ? 'Yes' : 'No' }}
+                    </p>
+                    <p><strong>Consent:</strong> {{ report.consent ? 'Yes' : 'No' }}</p>
+
+                    <div v-if="report.attachments && report.attachments.length" class="mt-4">
+                      <strong>Attachments:</strong>
+                      <ul class="attachment-list">
+                        <li v-for="(attachment, idx) in report.attachments" :key="idx">
+                          <a
+                            :href="getAttachmentUrl(attachment)"
+                            target="_blank"
+                            class="attachment-link"
+                          >
+                            <v-icon small class="mr-1">mdi-paperclip</v-icon>
+                            {{ getAttachmentName(attachment) }}
+                          </a>
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </v-col>
+      </v-row>
+      <v-alert
+        v-else-if="!isLoading && !error"
+        type="info"
+        class="mt-4 mx-auto"
+        style="max-width: 600px"
+      >
+        No reports found.
+      </v-alert>
     </v-main>
   </v-app>
 </template>
@@ -119,8 +104,12 @@ export default {
       reports: [],
       isLoading: false,
       error: null,
-      expandedPanels: [],
     }
+  },
+  computed: {
+    sortedReports() {
+      return [...this.reports].sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+    },
   },
   mounted() {
     this.fetchReports()
@@ -131,16 +120,12 @@ export default {
       this.error = null
       try {
         const response = await api.get('/reports')
-        console.log('API Response:', response)
-
         if (response.data.success) {
           this.reports = response.data.data.map((report) => ({
             ...report,
-            // Ensure consistent field names
             witnessName: report.witness_name || report.witnessName,
             witnessContact: report.witness_contact || report.witnessContact,
             allowContact: report.allow_contact || report.allowContact,
-            // Process attachments
             attachments: this.processAttachments(report.attachments),
           }))
         } else {
@@ -171,8 +156,6 @@ export default {
 
     processAttachments(attachments) {
       if (!attachments) return []
-
-      // Handle both string paths and object attachments
       if (typeof attachments === 'string') {
         try {
           attachments = JSON.parse(attachments)
@@ -180,7 +163,6 @@ export default {
           return []
         }
       }
-
       return attachments.map((attachment) => {
         if (typeof attachment === 'string') {
           return {
@@ -232,45 +214,91 @@ export default {
 </script>
 
 <style scoped>
-.full-screen-container {
-  padding: 24px;
+.federal-blue {
+  background-color: #000c66;
   min-height: 100vh;
-  background: #f5f5f5;
-}
-
-.reports-container {
-  width: 100%;
-  max-width: 1200px;
   padding: 24px;
-  border-radius: 8px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-  background: white;
 }
 
-.v-expansion-panel {
-  border-radius: 4px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  margin-bottom: 12px;
+.reports-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 40px;
+  padding: 20px;
 }
 
-.v-expansion-panel-title {
+.flip-card {
+  background-color: transparent;
+  width: 300px;
+  height: 400px;
+  perspective: 1000px;
+  font-family: sans-serif;
+  margin: 0 auto;
+}
+
+.title {
+  font-size: 2em;
+  font-weight: 900;
+  text-align: center;
+  margin: 0 0 10px 0;
   color: #000c66;
-  font-weight: 600;
 }
 
-.text-h4 {
-  color: #000c66;
-  font-weight: 700;
+.flip-card-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  text-align: center;
+  transition: transform 0.8s;
+  transform-style: preserve-3d;
 }
 
-.text-h5 {
+.flip-card:hover .flip-card-inner {
+  transform: rotateY(180deg);
+}
+
+.flip-card-front,
+.flip-card-back {
+  box-shadow: 0 8px 14px 0 rgba(0, 0, 0, 0.2);
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  border: 1px solid #d5d5e9;
+  border-radius: 1rem;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.flip-card-front {
+  background-color: #e2e2f3;
   color: #000c66;
-  font-weight: 600;
+}
+
+.flip-card-back {
+  background-color: #d5d5e9;
+  color: #000c66;
+  transform: rotateY(180deg);
+  overflow-y: auto;
+}
+
+.report-details {
+  text-align: left;
+  font-size: 0.9em;
+}
+
+.report-details p {
+  margin: 5px 0;
 }
 
 .attachment-list {
   padding-left: 20px;
   margin-top: 8px;
+  list-style-type: none;
 }
 
 .attachment-link {
@@ -282,7 +310,7 @@ export default {
 }
 
 .attachment-link:hover {
-  color: #e85b04;
+  color: #333;
   text-decoration: underline;
 }
 </style>

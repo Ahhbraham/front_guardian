@@ -18,7 +18,7 @@ import PoliceDashboard from '@/views/PoliceDashboard.vue'
 import AmbulanceDashboard from '@/views/AmbulanceDashboard.vue'
 import FireServicesDashboard from '@/views/FireServicesDashboard.vue'
 import Admin from '@/views/Admin.vue'
-//confirmation
+//Small confirmation Pages
 import GrConfirmation from '@/views/GrConfirmation.vue'
 //
 

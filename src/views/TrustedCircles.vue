@@ -5,25 +5,6 @@
         <v-row>
           <!-- Contacts Section -->
           <v-col cols="12" md="4">
-            <!-- SOS Button -->
-            <div class="sos-button-container">
-              <v-btn
-                fab
-                :class="{ vibrating: !sosDialog }"
-                @click="showSosDialog"
-                style="
-                  background-color: #ffffff;
-                  border: 2px solid #f5f5f5;
-                  width: 12.8vw;
-                  height: 12.8vw;
-                  border-radius: 50%;
-                  z-index: 10;
-                "
-                elevation="24"
-              >
-                <span style="color: #333333; font-size: 2.048vw; font-weight: bold">SOS</span>
-              </v-btn>
-            </div>
             <v-list color="transparent">
               <v-list-item
                 v-for="(contact, index) in contacts"
@@ -83,20 +64,23 @@
                 <div
                   v-for="(message, index) in messages"
                   :key="index"
-                  :class="['message-bubble', message.sender === 'me' ? 'sent' : 'received']"
+                  :class="[
+                    'message-bubble',
+                    message.sender_id === currentUser.id ? 'sent' : 'received',
+                  ]"
                 >
-                  <div v-if="message.sender === 'them'" class="message-avatar">
+                  <div v-if="message.sender_id !== currentUser.id" class="message-avatar">
                     <v-avatar size="32">
                       <img :src="selectedContact.avatar" :alt="selectedContact.name" />
                     </v-avatar>
                   </div>
                   <div class="message-content">
-                    <div class="message-text">{{ message.text }}</div>
+                    <div class="message-text">{{ message.message }}</div>
                     <div class="message-meta">
-                      <v-icon v-if="message.sender === 'me'" small class="read-icon"
+                      <v-icon v-if="message.sender_id === currentUser.id" small class="read-icon"
                         >mdi-check-all</v-icon
                       >
-                      <span class="message-time">{{ message.time }}</span>
+                      <span class="message-time">{{ formatTime(message.created_at) }}</span>
                     </div>
                   </div>
                 </div>
@@ -123,12 +107,10 @@
                   icon
                   @click="sendMessage"
                   class="send-btn"
-                  :disabled="!newMessage.trim()"
+                  :disabled="!newMessage.trim() || sending"
+                  :loading="sending"
                 >
                   <v-icon>mdi-send</v-icon>
-                </v-btn>
-                <v-btn icon color="#4A6FA5" @click="sendLocation" class="location-btn">
-                  <v-icon>mdi-map-marker</v-icon>
                 </v-btn>
               </v-card-actions>
             </v-card>
@@ -143,169 +125,83 @@
           </v-col>
         </v-row>
       </v-container>
-
-      <!-- SOS Dialog -->
-      <v-dialog v-model="sosDialog" max-width="400" persistent>
-        <v-card>
-          <v-card-title class="text-h5" style="color: #333333; padding: 16px">
-            Emergency Services
-          </v-card-title>
-          <v-card-text style="padding: 16px">
-            <v-btn block class="mb-2" color="#e0e0e0" @click="startCountdown('Police')">
-              Police
-            </v-btn>
-            <v-btn block class="mb-2" color="#e0e0e0" @click="startCountdown('Ambulance')">
-              Ambulance
-            </v-btn>
-            <v-btn block class="mb-2" color="#e0e0e0" @click="startCountdown('Fire Service')">
-              Fire Services
-            </v-btn>
-            <v-divider class="my-3"></v-divider>
-            <div class="contacts-header">Contacts</div>
-            <div class="contacts-list">
-              <div
-                v-for="(contact, index) in contacts"
-                :key="'contact-' + index"
-                class="contact-item"
-                @click="startCountdown(contact.name)"
-              >
-                <v-avatar size="40" class="contact-avatar">
-                  <img :src="contact.avatar" :alt="contact.name" />
-                </v-avatar>
-                <div class="contact-details">
-                  <div class="contact-name">{{ contact.name }}</div>
-                </div>
-              </div>
-            </div>
-          </v-card-text>
-          <v-card-actions style="padding: 16px">
-            <v-spacer></v-spacer>
-            <v-btn color="#333333" text @click="sosDialog = false">Cancel</v-btn>
-          </v-card-actions>
-        </v-card>
-      </v-dialog>
-
-      <!-- Countdown Overlay -->
-      <v-dialog v-model="countdownActive" fullscreen hide-overlay transition="fade-transition">
-        <v-card color="#ff4444" class="countdown-overlay">
-          <div class="countdown-content">
-            <div class="countdown-number">{{ countdown }}</div>
-            <div class="countdown-text">Emergency call in progress</div>
-            <v-btn
-              @click="cancelCountdown"
-              large
-              dark
-              class="countdown-cancel"
-              color="#000C66"
-              variant="text"
-              elevation="12"
-            >
-              CANCEL
-            </v-btn>
-          </div>
-        </v-card>
-      </v-dialog>
     </v-main>
   </v-app>
 </template>
 
 <script>
+import axios from 'axios'
+
 export default {
   data() {
     return {
-      contacts: [
-        {
-          name: 'John Doe',
-          id: 1,
-          avatar:
-            'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-4.0.3&auto=format&fit=crop&w=48&h=48&q=80',
-        },
-        {
-          name: 'Jane Smith',
-          id: 2,
-          avatar:
-            'https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-4.0.3&auto=format&fit=crop&w=48&h=48&q=80',
-        },
-        {
-          name: 'Emergency Services',
-          id: 3,
-          avatar:
-            'https://images.unsplash.com/photo-1584464491722-7e5335662a2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=48&h=48&q=80',
-        },
-      ],
+      contacts: [],
       selectedContact: null,
       messages: [],
       newMessage: '',
-      sosDialog: false,
-      countdownActive: false,
-      countdown: 5,
-      countdownInterval: null,
-      selectedService: '',
+      currentUser: {}, // Will store logged-in user info
+      sending: false,
     }
   },
+  async created() {
+    await this.fetchCurrentUser()
+    await this.fetchContacts()
+  },
   methods: {
-    selectContact(contact) {
+    async fetchCurrentUser() {
+      try {
+        const response = await axios.get('/api/user')
+        this.currentUser = response.data
+      } catch (error) {
+        console.error('Error fetching current user:', error)
+      }
+    },
+    async fetchContacts() {
+      try {
+        const response = await axios.get('/api/contacts')
+        this.contacts = response.data
+      } catch (error) {
+        console.error('Error fetching contacts:', error)
+      }
+    },
+    async selectContact(contact) {
       this.selectedContact = contact
-      this.messages = [
-        {
-          text: 'Hello! How are you doing today?',
-          sender: 'them',
-          time: '10:30 AM',
-        },
-        {
-          text: "I'm good, thanks for asking! How about you?",
-          sender: 'me',
-          time: '10:32 AM',
-        },
-        {
-          text: "I'm doing well. Just wanted to check in with you.",
-          sender: 'them',
-          time: '10:33 AM',
-        },
-      ]
-      this.$nextTick(() => {
-        this.scrollToBottom()
-      })
+      await this.fetchMessages(contact.id)
     },
-    sendMessage() {
-      if (this.newMessage.trim() === '') return
+    async fetchMessages(contactId) {
+      try {
+        const response = await axios.get(`/api/messages/${contactId}`)
+        this.messages = response.data
+        this.scrollToBottom()
+      } catch (error) {
+        console.error('Error fetching messages:', error)
+      }
+    },
+    formatTime(timestamp) {
+      const date = new Date(timestamp)
+      return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+    },
+    async sendMessage() {
+      if (!this.newMessage.trim() || !this.selectedContact) return
 
-      this.messages.push({
-        text: this.newMessage,
-        sender: 'me',
-        time: new Date().toLocaleTimeString([], {
-          hour: '2-digit',
-          minute: '2-digit',
-        }),
-      })
-      this.newMessage = ''
+      this.sending = true
 
-      // Simulate reply after 1 second
-      setTimeout(() => {
-        this.messages.push({
-          text: this.getRandomReply(),
-          sender: 'them',
-          time: new Date().toLocaleTimeString([], {
-            hour: '2-digit',
-            minute: '2-digit',
-          }),
+      try {
+        const response = await axios.post('/api/messages', {
+          receiver_id: this.selectedContact.id,
+          message: this.newMessage,
         })
-        this.scrollToBottom()
-      }, 1000)
 
-      this.scrollToBottom()
-    },
-    getRandomReply() {
-      const replies = [
-        "That's interesting!",
-        'I see what you mean.',
-        'Thanks for letting me know.',
-        "I'll get back to you on that.",
-        'Sounds good!',
-        'Can we talk about this later?',
-        'I appreciate your message.',
-      ]
-      return replies[Math.floor(Math.random() * replies.length)]
+        // Add the new message to the local array
+        this.messages.push(response.data.message)
+        this.newMessage = ''
+        this.scrollToBottom()
+      } catch (error) {
+        console.error('Error sending message:', error)
+        this.$toast.error('Failed to send message')
+      } finally {
+        this.sending = false
+      }
     },
     scrollToBottom() {
       this.$nextTick(() => {
@@ -315,73 +211,12 @@ export default {
         }
       })
     },
-    sendLocation() {
-      if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(
-          (position) => {
-            const location = `https://www.openstreetmap.org/?mlat=${position.coords.latitude}&mlon=${position.coords.longitude}#map=15/${position.coords.latitude}/${position.coords.longitude}`
-            this.messages.push({
-              text: `Here's my current location: ${location}`,
-              sender: 'me',
-              time: new Date().toLocaleTimeString([], {
-                hour: '2-digit',
-                minute: '2-digit',
-              }),
-            })
-            this.scrollToBottom()
-          },
-          (error) => {
-            console.error('Error getting location:', error)
-            alert('Could not get your location')
-          },
-        )
-      } else {
-        alert('Geolocation is not supported by this browser.')
-      }
-    },
     showContactInfo(contact) {
       alert(`Contact Info:\nName: ${contact.name}`)
     },
     showAttachmentMenu() {
       alert('Attachment menu would open here')
     },
-    showSosDialog() {
-      this.sosDialog = true
-    },
-    startCountdown(service) {
-      this.selectedService = service
-      this.sosDialog = false
-      this.countdownActive = true
-      this.countdown = 5
-      this.countdownInterval = setInterval(() => {
-        this.countdown--
-        if (this.countdown <= 0) {
-          clearInterval(this.countdownInterval)
-          this.countdownActive = false
-          this.contactService(this.selectedService)
-        }
-      }, 1000)
-    },
-    cancelCountdown() {
-      clearInterval(this.countdownInterval)
-      this.countdownActive = false
-    },
-    contactService(service) {
-      console.log(`Contacting ${service}...`)
-      if (this.contacts.some((contact) => contact.name === service)) {
-        this.notifyContact(service)
-      } else {
-        alert(`Contacting ${service}`)
-      }
-    },
-    notifyContact(contactName) {
-      alert(`Notifying ${contactName}`)
-    },
-  },
-  beforeDestroy() {
-    if (this.countdownInterval) {
-      clearInterval(this.countdownInterval)
-    }
   },
 }
 </script>
@@ -417,38 +252,6 @@ export default {
   align-items: center;
   justify-content: center;
   background: #ffffff;
-}
-
-/* SOS Button */
-.sos-button-container {
-  display: flex;
-  justify-content: center;
-  padding: 16px 0;
-}
-
-.vibrating {
-  animation: vibrate 0.5s infinite;
-}
-
-@keyframes vibrate {
-  0% {
-    transform: translate(0);
-  }
-  20% {
-    transform: translate(-4px, 4px);
-  }
-  40% {
-    transform: translate(-4px, -4px);
-  }
-  60% {
-    transform: translate(4px, 4px);
-  }
-  80% {
-    transform: translate(4px, -4px);
-  }
-  100% {
-    transform: translate(0);
-  }
 }
 
 /* Header Styles */
@@ -639,71 +442,6 @@ export default {
 
 .send-btn:disabled {
   opacity: 0.5;
-}
-
-/* Countdown Overlay Styles */
-.countdown-overlay {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 100%;
-}
-
-.countdown-content {
-  text-align: center;
-  color: white;
-}
-
-.countdown-number {
-  font-size: 120px;
-  font-weight: bold;
-  line-height: 1;
-  margin-bottom: 20px;
-}
-
-.countdown-text {
-  font-size: 24px;
-  margin-bottom: 40px;
-}
-
-.countdown-cancel {
-  font-size: 18px;
-  font-weight: bold;
-  text-transform: uppercase;
-}
-
-/* Contacts Panel Styles */
-.contacts-header {
-  font-weight: bold;
-  margin: 15px 0 10px;
-  color: #333;
-}
-
-.contacts-list {
-  margin-top: 10px;
-}
-
-.contact-item {
-  display: flex;
-  align-items: center;
-  padding: 10px;
-  margin: 5px 0;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: background-color 0.2s;
-}
-
-.contact-item:hover {
-  background-color: #f0f0f0;
-}
-
-.contact-details {
-  margin-left: 15px;
-}
-
-.contact-name {
-  font-weight: 500;
-  color: #333;
 }
 
 /* Scrollbar */

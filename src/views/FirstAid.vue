@@ -21,24 +21,8 @@
         </div>
       </div>
 
-      <!-- Center Section: Panic Button -->
-      <div class="center-section">
-        <v-btn
-          fab
-          :class="{ vibrating: !dialog }"
-          @click="showDialog"
-          style="
-            background-color: #ffffff;
-            border: 2px solid #f5f5f5;
-            width: 12.8vw;
-            height: 12.8vw;
-            border-radius: 50%;
-          "
-          elevation="24"
-        >
-          <span style="color: #333333; font-size: 2.048vw; font-weight: bold">SOS</span>
-        </v-btn>
-      </div>
+      <!-- Center Section: Removed Panic Button -->
+      <div class="center-section"></div>
     </div>
 
     <!-- Contact Dialog -->
