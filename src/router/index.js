@@ -11,7 +11,6 @@ import FirstAid from '@/views/FirstAid.vue'
 import LiveTrack from '@/views/LiveTrack.vue'
 import GuardianAlert from '@/views/GuardianAlert.vue'
 import GuardianReport from '@/views/GuardianReport.vue'
-import TrustedCircles from '@/views/TrustedCircles.vue'
 import ZonalUpdates from '@/views/ZonalUpdates.vue'
 //abilities
 import PoliceDashboard from '@/views/PoliceDashboard.vue'
@@ -79,11 +78,6 @@ const router = createRouter({
           path: '/GuardianReport',
           name: 'GuardianReport',
           component: GuardianReport,
-        },
-        {
-          path: '/TrustedCircles',
-          name: 'TrustedCircles',
-          component: TrustedCircles,
         },
         {
           path: '/ZonalUpdates',

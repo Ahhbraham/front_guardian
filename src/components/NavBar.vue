@@ -13,7 +13,6 @@
       <v-btn to="/GuardianAlert" color="#000C66" variant="text">Guardian Alert</v-btn>
       <v-btn to="/LiveTrack" color="#000C66" variant="text">Live Track</v-btn>
       <v-btn to="/GuardianReport" color="#000C66" variant="text">Guardian Report</v-btn>
-      <v-btn to="/TrustedCircles" color="#000C66" variant="text">Trusted Circles</v-btn>
       <v-btn to="/ZonalUpdates" color="#000C66" variant="text">Zonal Updates</v-btn>
       <!-- Login and Register -->
       <v-btn to="/LoginPage" color="#000C66" variant="text">Login</v-btn>
