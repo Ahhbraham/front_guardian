@@ -1,6 +1,7 @@
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
 import App from './App.vue'
+// import Home from './Home.vue'
 import router from './router'
 
 // Vuetify
@@ -14,6 +15,7 @@ import '@mdi/font/css/materialdesignicons.css'
 
 //Others
 import axios from 'axios'
+import 'leaflet/dist/leaflet.css'
 
 //
 

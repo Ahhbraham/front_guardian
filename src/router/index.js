@@ -63,12 +63,6 @@ const router = createRouter({
         },
 
         {
-          path: '/LiveTrack',
-          name: 'LiveTrack',
-          component: LiveTrack,
-        },
-
-        {
           path: '/GuardianAlert',
           name: 'GuardianAlert',
           component: GuardianAlert,
@@ -104,6 +98,11 @@ const router = createRouter({
           path: '/Admin',
           name: 'Admin',
           component: Admin,
+        },
+        {
+          path: '/LiveTrack',
+          name: 'LiveTrack',
+          component: LiveTrack,
         },
         {
           path: '/GrConfirmation',
