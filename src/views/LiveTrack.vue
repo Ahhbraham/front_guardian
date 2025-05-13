@@ -46,7 +46,7 @@
           </v-col>
 
           <!-- Right Column: Map -->
-          <v-col cols="12" md="6" class="pa-0">
+          <v-col cols="12" md="8" class="pa-0">
             <div id="map-container" style="height: 100%"></div>
           </v-col>
         </v-row>
