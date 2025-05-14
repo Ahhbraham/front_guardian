@@ -1,6 +1,10 @@
 <template>
-  <!-- Below hides navbar in Splash -->
-  <v-app-bar v-if="$route.path !== '/'" color="#f5f5f5" scroll-behavior="hide">
+  <!-- Hide navbar on Splash, Login, and Register pages -->
+  <v-app-bar
+    v-if="!['/', '/LoginPage', '/RegisterPage'].includes($route.path)"
+    color="#f5f5f5"
+    scroll-behavior="hide"
+  >
     <v-toolbar-title>
       <v-btn to="/" color="#000C66" class="font-weight-bold">Guardian</v-btn>
     </v-toolbar-title>
