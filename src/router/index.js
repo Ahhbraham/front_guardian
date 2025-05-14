@@ -8,7 +8,6 @@ import RegisterPage from '@/views/RegisterPage.vue'
 // pages
 import HomePage from '@/views/HomePage.vue'
 import FirstAid from '@/views/FirstAid.vue'
-import LiveTrack from '@/views/LiveTrack.vue'
 import GuardianAlert from '@/views/GuardianAlert.vue'
 import GuardianReport from '@/views/GuardianReport.vue'
 import ZonalUpdates from '@/views/ZonalUpdates.vue'
@@ -103,12 +102,6 @@ const router = createRouter({
           path: '/Admin',
           name: 'Admin',
           component: Admin,
-          meta: { requiresAuth: true },
-        },
-        {
-          path: '/LiveTrack',
-          name: 'LiveTrack',
-          component: LiveTrack,
           meta: { requiresAuth: true },
         },
         {
