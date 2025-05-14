@@ -14,6 +14,7 @@ import GuardianReport from '@/views/GuardianReport.vue'
 import ZonalUpdates from '@/views/ZonalUpdates.vue'
 //abilities
 import PoliceDashboard from '@/views/PoliceDashboard.vue'
+import PoliceDashboardSos from '@/views/PoliceDashboardSos.vue'
 import AmbulanceDashboard from '@/views/AmbulanceDashboard.vue'
 import FireServicesDashboard from '@/views/FireServicesDashboard.vue'
 import Admin from '@/views/Admin.vue'
@@ -83,6 +84,11 @@ const router = createRouter({
           path: '/PoliceDashboard',
           name: 'PoliceDashboard',
           component: PoliceDashboard,
+        },
+        {
+          path: '/PoliceDashboardSos',
+          name: 'PoliceDashboardSos',
+          component: PoliceDashboardSos,
         },
         {
           path: '/AmbulanceDashboard',

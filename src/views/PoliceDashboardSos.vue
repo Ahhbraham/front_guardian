@@ -26,9 +26,9 @@
             {{ error }}
           </v-alert>
 
-          <div v-if="fireServiceReports.length" class="reports-grid ml-4">
+          <div v-if="reports.length" class="reports-grid ml-4">
             <div
-              v-for="(report, index) in sortedFireServiceReports"
+              v-for="(report, index) in sortedReports"
               :key="report.id || index"
               class="flip-card"
             >
@@ -64,7 +64,7 @@
             class="mt-4 ml-4"
             style="max-width: 600px"
           >
-            No fire service reports found.
+            No police reports found.
           </v-alert>
         </v-col>
 
@@ -83,7 +83,7 @@ import 'leaflet/dist/leaflet.css'
 import api from '../services/api'
 
 export default {
-  name: 'FireServicesDashboard',
+  name: 'SosReports',
   data() {
     return {
       reports: [],
@@ -94,16 +94,8 @@ export default {
     }
   },
   computed: {
-    // Filter reports to only show fire services
-    fireServiceReports() {
-      return this.reports.filter((report) => report.sos_type === 'fire_services')
-    },
-
-    // Sort the filtered fire service reports by date
-    sortedFireServiceReports() {
-      return [...this.fireServiceReports].sort(
-        (a, b) => new Date(b.created_at) - new Date(a.created_at),
-      )
+    sortedReports() {
+      return [...this.reports].sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
     },
   },
   mounted() {
@@ -117,7 +109,8 @@ export default {
       try {
         const response = await api.get('/sos')
         if (response.data.success) {
-          this.reports = response.data.data
+          // Filter reports to only include 'police' sos_type
+          this.reports = response.data.data.filter((report) => report.sos_type === 'police')
         } else {
           this.error = response.data.message || 'Failed to fetch reports'
         }
@@ -147,7 +140,7 @@ export default {
     initMap() {
       this.map = L.map('map').setView([1.2921, 36.8219], 6) // Default view set to Nairobi (Kenya)
       L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; OpenStreetMap contributors',
+        attribution: '© OpenStreetMap contributors',
       }).addTo(this.map)
 
       // Setting bounds to Kenya's geographic limits
