@@ -3,7 +3,7 @@
     <v-main>
       <v-container fluid class="pa-0" style="height: 100vh">
         <v-row no-gutters style="height: 100%">
-          <!-- Left Column -->
+          <!-- Left Column with Buttons -->
           <v-col class="pa-3 d-flex flex-column justify-center align-center left-column">
             <v-card
               flat
@@ -27,7 +27,7 @@
             </v-card>
           </v-col>
 
-          <!-- Right Column: Map -->
+          <!-- Right Column with Leaflet Map -->
           <v-col class="pa-0 map-column">
             <l-map
               class="leaflet-map"
@@ -63,7 +63,7 @@ import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 
 export default {
-  name: 'LocationMapView',
+  name: 'SOS',
   components: {
     LMap,
     LTileLayer,
@@ -74,7 +74,7 @@ export default {
   data() {
     return {
       zoom: 11,
-      center: [-1.309, 36.814],
+      center: [-1.309, 36.814], // Nairobi center
       bounds: [
         [-4.8995, 33.9098],
         [4.62, 41.8995],
