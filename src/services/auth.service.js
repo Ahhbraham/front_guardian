@@ -46,6 +46,7 @@ export function useAuth() {
 
         // Save token
         TokenService.setToken(token)
+        localStorage.setItem('token', token) // <-- Store token in localStorage
 
         // Set user data
         user.value = userData

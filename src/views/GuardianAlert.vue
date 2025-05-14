@@ -13,7 +13,7 @@
         <defs>
           <path
             id="gentle-wave"
-            d="M-160 44c30 0 58-24 88-24s 58 24 88 24 58-24 88-24 58 24 88 24 v44h-352z"
+            d="M-160 44c30 0 58-24 88-24s58 24 88 24 58-24 88-24 58 24 88 24 v44h-352z"
           />
         </defs>
         <g class="parallax">
@@ -55,12 +55,59 @@
       </v-btn>
     </div>
 
+    <!-- Emergency Services Dialog -->
+    <v-dialog v-model="dialog" max-width="400" persistent>
+      <v-card>
+        <v-card-title class="text-h5" style="color: #333333; padding: 16px">
+          Emergency Services
+        </v-card-title>
+        <v-card-text style="padding: 16px">
+          <v-btn block class="mb-2" color="#e0e0e0" @click="selectService('police')">Police</v-btn>
+          <v-btn block class="mb-2" color="#e0e0e0" @click="selectService('ambulance')"
+            >Ambulance</v-btn
+          >
+          <v-btn block class="mb-2" color="#e0e0e0" @click="selectService('fire_services')"
+            >Fire Services</v-btn
+          >
+        </v-card-text>
+        <v-card-actions style="padding: 16px">
+          <v-spacer></v-spacer>
+          <v-btn color="#333333" text @click="dialog = false">Cancel</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
+    <!-- Description Dialog -->
+    <v-dialog v-model="descriptionDialog" max-width="400" persistent>
+      <v-card>
+        <v-card-title class="text-h5" style="color: #333333; padding: 16px">
+          Describe the Emergency
+        </v-card-title>
+        <v-card-text style="padding: 16px">
+          <v-textarea
+            v-model="description"
+            label="Brief description of the emergency"
+            rows="4"
+            outlined
+            :rules="[(v) => !!v || 'Description is required']"
+          ></v-textarea>
+        </v-card-text>
+        <v-card-actions style="padding: 16px">
+          <v-spacer></v-spacer>
+          <v-btn color="#333333" text @click="descriptionDialog = false">Cancel</v-btn>
+          <v-btn color="#000C66" :disabled="!description" @click="startCountdown" elevation="4"
+            >Send SOS</v-btn
+          >
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
     <!-- Countdown Overlay -->
     <v-dialog v-model="countdownActive" fullscreen hide-overlay transition="fade-transition">
       <v-card color="#ff4444" class="countdown-overlay">
         <div class="countdown-content">
           <div class="countdown-number">{{ countdown }}</div>
-          <div class="countdown-text">Emergency call in progress</div>
+          <div class="countdown-text">Contacting {{ selectedService }}...</div>
           <v-btn
             @click="cancelCountdown"
             large
@@ -76,143 +123,155 @@
       </v-card>
     </v-dialog>
 
-    <!-- Contact Dialog -->
-    <v-dialog v-model="dialog" max-width="400" persistent>
-      <v-card>
-        <v-card-title class="text-h5" style="color: #333333; padding: 16px">
-          Emergency Services
-        </v-card-title>
-        <v-card-text style="padding: 16px">
-          <v-btn block class="mb-2" color="#e0e0e0" @click="startCountdown('Police')">
-            Police
-          </v-btn>
-          <v-btn block class="mb-2" color="#e0e0e0" @click="startCountdown('Ambulance')">
-            Ambulance
-          </v-btn>
-          <v-btn block class="mb-2" color="#e0e0e0" @click="startCountdown('Fire Service')">
-            Fire Services
-          </v-btn>
-          <v-divider class="my-3"></v-divider>
-          <div class="contacts-header">Trusted Contacts</div>
-          <div class="contacts-list">
-            <div
-              v-for="(contact, index) in trustedContacts"
-              :key="'contact-' + index"
-              class="contact-item"
-              @click="startCountdown(contact.name)"
-            >
-              <v-avatar size="40" class="contact-avatar">
-                <img :src="contact.photo" :alt="contact.name" />
-              </v-avatar>
-              <div class="contact-details">
-                <div class="contact-name">{{ contact.name }}</div>
-                <div class="contact-status" :class="'status-' + contact.status">
-                  {{ contact.status }}
-                </div>
-              </div>
-            </div>
-          </div>
-        </v-card-text>
-        <v-card-actions style="padding: 16px">
-          <v-spacer></v-spacer>
-          <v-btn color="#333333" text @click="dialog = false">Cancel</v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
+    <!-- Success/Error Notification -->
+    <v-snackbar v-model="alert.show" :color="alert.color" timeout="3000">
+      {{ alert.message }}
+    </v-snackbar>
   </div>
 </template>
 
 <script>
+import axios from 'axios'
+
 export default {
-  name: 'EnhancedPanicButton',
+  name: 'EmergencyButton',
   data() {
     return {
       dialog: false,
+      descriptionDialog: false,
       countdownActive: false,
-      countdown: 5,
+      countdown: 3,
       countdownInterval: null,
       selectedService: '',
+      description: '',
       waves: [
         { color: '#E2E2F3', opacity: 0.7 },
         { color: '#E2E2F3', opacity: 0.5 },
         { color: '#E2E2F3', opacity: 0.3 },
         { color: '#E2E2F3', opacity: 0.1 },
       ],
-      trustedContacts: [
-        {
-          name: 'John Doe',
-          photo: 'https://randomuser.me/api/portraits/men/1.jpg',
-          status: 'Available',
-          phone: '+1234567890',
-        },
-        {
-          name: 'Jane Smith',
-          photo: 'https://randomuser.me/api/portraits/women/1.jpg',
-          status: 'Notified',
-          phone: '+1987654321',
-        },
-        {
-          name: 'Family Group',
-          photo: 'https://cdn-icons-png.flaticon.com/512/1077/1077114.png',
-          status: 'Responding',
-          phone: '+1122334455',
-        },
-      ],
+      alert: {
+        show: false,
+        message: '',
+        color: 'success',
+      },
     }
   },
   methods: {
     showDialog() {
       this.dialog = true
     },
-    startCountdown(service) {
-      this.selectedService = service
+    selectService(service) {
+      this.selectedService = this.formatServiceName(service)
       this.dialog = false
+      this.descriptionDialog = true
+      this.description = ''
+    },
+    startCountdown() {
+      this.descriptionDialog = false
       this.countdownActive = true
-      this.countdown = 5
+      this.countdown = 3
+
       this.countdownInterval = setInterval(() => {
         this.countdown--
         if (this.countdown <= 0) {
           clearInterval(this.countdownInterval)
-          this.countdownActive = false
-          this.contactService(this.selectedService)
+          this.sendEmergencyRequest()
         }
       }, 1000)
     },
     cancelCountdown() {
       clearInterval(this.countdownInterval)
       this.countdownActive = false
+      this.showAlert('Emergency call cancelled', 'info')
     },
-    contactService(service) {
-      console.log(`Contacting ${service}...`)
-      if (this.trustedContacts.some((contact) => contact.name === service)) {
-        this.notifyTrustedContact(service)
-      } else {
-        alert(`Contacting ${service}`)
+    formatServiceName(service) {
+      const names = {
+        police: 'Police',
+        ambulance: 'Ambulance',
+        fire_services: 'Fire Services',
+      }
+      return names[service] || service
+    },
+    async sendEmergencyRequest() {
+      this.countdownActive = false
+
+      try {
+        const position = await this.getCurrentPosition()
+        const { latitude, longitude } = position.coords
+        const token = localStorage.getItem('token')
+
+        if (!token) throw new Error('Authorization token is missing.')
+
+        const payload = {
+          sos_type: this.selectedService.toLowerCase().replace(' ', '_'),
+          description: this.description,
+          latitude,
+          longitude,
+        }
+
+        console.log('Sending SOS:', {
+          url: 'http://localhost:8000/api/sos',
+          token,
+          payload,
+        })
+
+        const response = await axios.post('http://localhost:8000/api/sos', payload, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        })
+
+        console.log('SOS Response:', response.data)
+        this.showAlert(`${this.selectedService} has been notified! Help is on the way.`, 'success')
+      } catch (error) {
+        console.error('Error sending emergency request:', error)
+
+        let errorMessage = 'Failed to send emergency request. Please try again.'
+
+        if (error.message.includes('Geolocation')) {
+          errorMessage = 'Location access denied. Please enable location services and try again.'
+        } else if (error.response) {
+          errorMessage = `Server error (${error.response.status}): ${error.response.data.message || 'Internal error'}`
+          console.error('Server response:', error.response.data)
+        }
+
+        this.showAlert(errorMessage, 'error')
       }
     },
-    notifyTrustedContact(contactName) {
-      this.trustedContacts = this.trustedContacts.map((contact) => {
-        if (contact.name === contactName) {
-          return {
-            ...contact,
-            status: ['Notified', 'Responding', 'Available'][Math.floor(Math.random() * 3)],
-          }
+    getCurrentPosition() {
+      return new Promise((resolve, reject) => {
+        if (!navigator.geolocation) {
+          reject(new Error('Geolocation is not supported by your browser'))
+        } else {
+          navigator.geolocation.getCurrentPosition(
+            resolve,
+            (err) => {
+              console.error('Geolocation error:', err)
+              reject(new Error('Unable to get location. Please check GPS or permissions.'))
+            },
+            {
+              enableHighAccuracy: true,
+              timeout: 5000,
+              maximumAge: 0,
+            },
+          )
         }
-        return contact
       })
-      alert(`Notifying ${contactName}`)
+    },
+    showAlert(message, color) {
+      console.log(`ALERT (${color}):`, message)
+      this.alert = { show: true, message, color }
     },
   },
   beforeDestroy() {
-    if (this.countdownInterval) {
-      clearInterval(this.countdownInterval)
-    }
+    if (this.countdownInterval) clearInterval(this.countdownInterval)
   },
 }
 </script>
 
 <style scoped>
-/* Wavy Background Styles */
+/* Your existing styles are already clean and responsive. Keeping as-is */
 .wavy-background {
   position: fixed;
   top: 0;
@@ -222,15 +281,12 @@ export default {
   z-index: 0;
   overflow: hidden;
 }
-
 .waves {
   position: absolute;
   width: 100%;
   height: 100%;
   margin: 0;
 }
-
-/* Header Overlay */
 .header-overlay {
   position: fixed;
   top: 5vw;
@@ -240,8 +296,6 @@ export default {
   display: flex;
   justify-content: center;
 }
-
-/* Button Overlay */
 .button-overlay {
   position: fixed;
   top: 50%;
@@ -251,37 +305,28 @@ export default {
   display: flex;
   justify-content: center;
 }
-
-/* Header Icon */
 .header-icon {
   width: 11vw;
 }
-
-/* Animation */
 .parallax > use {
   animation: move-forever 25s cubic-bezier(0.55, 0.5, 0.45, 0.5) infinite;
 }
-
 .parallax > use:nth-child(1) {
   animation-delay: -2s;
   animation-duration: 7s;
 }
-
 .parallax > use:nth-child(2) {
   animation-delay: -3s;
   animation-duration: 10s;
 }
-
 .parallax > use:nth-child(3) {
   animation-delay: -4s;
   animation-duration: 13s;
 }
-
 .parallax > use:nth-child(4) {
   animation-delay: -5s;
   animation-duration: 20s;
 }
-
 @keyframes move-forever {
   0% {
     transform: translate3d(-90px, 0, 0);
@@ -290,90 +335,31 @@ export default {
     transform: translate3d(85px, 0, 0);
   }
 }
-
-/* Countdown Overlay Styles */
 .countdown-overlay {
   display: flex;
   align-items: center;
   justify-content: center;
   height: 100%;
 }
-
 .countdown-content {
   text-align: center;
   color: white;
 }
-
 .countdown-number {
   font-size: 120px;
   font-weight: bold;
   line-height: 1;
   margin-bottom: 20px;
 }
-
 .countdown-text {
   font-size: 24px;
   margin-bottom: 40px;
 }
-
 .countdown-cancel {
   font-size: 18px;
   font-weight: bold;
   text-transform: uppercase;
 }
-
-/* Contacts Panel Styles */
-.contacts-header {
-  font-weight: bold;
-  margin: 15px 0 10px;
-  color: #333;
-}
-
-.contacts-list {
-  margin-top: 10px;
-}
-
-.contact-item {
-  display: flex;
-  align-items: center;
-  padding: 10px;
-  margin: 5px 0;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: background-color 0.2s;
-}
-
-.contact-item:hover {
-  background-color: #f0f0f0;
-}
-
-.contact-details {
-  margin-left: 15px;
-}
-
-.contact-name {
-  font-weight: 500;
-  color: #333;
-}
-
-.contact-status {
-  font-size: 12px;
-  color: #666;
-}
-
-.status-Notified {
-  color: #ff9800;
-}
-
-.status-Responding {
-  color: #4caf50;
-}
-
-.status-Available {
-  color: #2196f3;
-}
-
-/* Mobile adjustments */
 @media (max-width: 768px) {
   .waves {
     height: 100%;
