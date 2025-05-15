@@ -37,7 +37,7 @@ export function useAuth() {
         throw new Error('Email and password are required')
       }
 
-      const response = await api.post('login', credentials)
+      const response = await api.post('/login', credentials)
 
       console.log('RESPONSE DATA : ', response.data)
       // Check if we have user and token in the response
@@ -70,7 +70,7 @@ export function useAuth() {
     error.value = null
 
     try {
-      const response = await api.post('register', userData)
+      const response = await api.post('/register', userData)
       return response
     } catch (err) {
       error.value = err.response?.data?.message || 'Registration failed'
@@ -84,7 +84,7 @@ export function useAuth() {
   async function logout() {
     user.value = null
     try {
-      const response = await api.get('register', userData)
+      const response = await api.get('/logout', userData)
       return response
     } catch (err) {
       error.value = err.response?.data?.message || 'Logout failed'

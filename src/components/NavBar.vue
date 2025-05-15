@@ -21,10 +21,10 @@
       <v-btn to="/LoginPage" color="#000C66" variant="text">Login</v-btn>
       <v-btn to="/RegisterPage" color="#000C66" variant="text">Join us</v-btn>
       <!-- abilities -->
-      <v-btn to="/PoliceDashboard" color="#000C66" variant="text">PD</v-btn>
-      <v-btn to="/PoliceDashboardSos" color="#000C66" variant="text">PDS</v-btn>
-      <v-btn to="/AmbulanceDashboard" color="#000C66" variant="text">AD</v-btn>
-      <v-btn to="/FireServicesDashboard" color="#000C66" variant="text">FSD</v-btn>
+      <v-btn to="/PoliceDashboard" color="#000C66" variant="text">PoliceReports</v-btn>
+      <v-btn to="/PoliceDashboardSos" color="#000C66" variant="text">PoliceSOS</v-btn>
+      <v-btn to="/AmbulanceDashboard" color="#000C66" variant="text">AmbulanceSOS</v-btn>
+      <v-btn to="/FireServicesDashboard" color="#000C66" variant="text">FireServicesSOS</v-btn>
       <v-btn to="/Admin" color="#000C66" variant="text">Admin</v-btn>
     </div>
   </v-app-bar>
