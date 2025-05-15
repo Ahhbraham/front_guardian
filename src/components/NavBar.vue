@@ -18,7 +18,6 @@
       <v-btn to="/GuardianReport" color="#000C66" variant="text">Guardian Report</v-btn>
       <v-btn to="/ZonalUpdates" color="#000C66" variant="text">Zonal Updates</v-btn>
       <!-- Login and Register -->
-      <v-btn to="/Profile" color="#000C66" variant="text">Profile</v-btn>
       <v-btn to="/LoginPage" color="#000C66" variant="text">Login</v-btn>
       <v-btn to="/RegisterPage" color="#000C66" variant="text">Join us</v-btn>
       <!-- abilities -->

@@ -17,7 +17,6 @@ import PoliceDashboard from '@/views/PoliceDashboard.vue'
 import PoliceDashboardSos from '@/views/PoliceDashboardSos.vue'
 import AmbulanceDashboard from '@/views/AmbulanceDashboard.vue'
 import FireServicesDashboard from '@/views/FireServicesDashboard.vue'
-import Profile from '@/views/Profile.vue'
 // Small confirmation Pages
 import GrConfirmation from '@/views/GrConfirmation.vue'
 
@@ -39,15 +38,6 @@ const router = createRouter({
           path: '/HomePage',
           name: 'HomePage',
           component: HomePage,
-          meta: {
-            requiresAuth: true,
-            allowedRoles: ['user', 'police', 'ambulance', 'fireservices', 'admin'],
-          },
-        },
-        {
-          path: '/Profile',
-          name: 'Profile',
-          component: Profile,
           meta: {
             requiresAuth: true,
             allowedRoles: ['user', 'police', 'ambulance', 'fireservices', 'admin'],
