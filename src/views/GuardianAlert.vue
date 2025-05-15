@@ -199,9 +199,10 @@ export default {
       try {
         const position = await this.getCurrentPosition()
         const { latitude, longitude } = position.coords
-        const token = localStorage.getItem('token')
+        //made change
+        const authToken = localStorage.getItem('authToken')
 
-        if (!token) throw new Error('Authorization token is missing.')
+        if (!authToken) throw new Error('Authorization token is missing.')
 
         const payload = {
           sos_type: this.selectedService.toLowerCase().replace(' ', '_'),
@@ -212,13 +213,13 @@ export default {
 
         console.log('Sending SOS:', {
           url: 'http://localhost:8000/api/sos',
-          token,
+          authToken,
           payload,
         })
 
         const response = await axios.post('http://localhost:8000/api/sos', payload, {
           headers: {
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${authToken}`,
           },
         })
 

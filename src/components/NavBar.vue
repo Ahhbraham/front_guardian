@@ -18,14 +18,14 @@
       <v-btn to="/GuardianReport" color="#000C66" variant="text">Guardian Report</v-btn>
       <v-btn to="/ZonalUpdates" color="#000C66" variant="text">Zonal Updates</v-btn>
       <!-- Login and Register -->
+      <v-btn to="/Profile" color="#000C66" variant="text">Profile</v-btn>
       <v-btn to="/LoginPage" color="#000C66" variant="text">Login</v-btn>
       <v-btn to="/RegisterPage" color="#000C66" variant="text">Join us</v-btn>
       <!-- abilities -->
-      <v-btn to="/PoliceDashboard" color="#000C66" variant="text">PoliceReports</v-btn>
-      <v-btn to="/PoliceDashboardSos" color="#000C66" variant="text">PoliceSOS</v-btn>
-      <v-btn to="/AmbulanceDashboard" color="#000C66" variant="text">AmbulanceSOS</v-btn>
-      <v-btn to="/FireServicesDashboard" color="#000C66" variant="text">FireServicesSOS</v-btn>
-      <v-btn to="/Admin" color="#000C66" variant="text">Admin</v-btn>
+      <v-btn to="/PoliceDashboard" color="#000C66" variant="text">PR</v-btn>
+      <v-btn to="/PoliceDashboardSos" color="#000C66" variant="text">PSOS</v-btn>
+      <v-btn to="/AmbulanceDashboard" color="#000C66" variant="text">ASOS</v-btn>
+      <v-btn to="/FireServicesDashboard" color="#000C66" variant="text">FSSOS</v-btn>
     </div>
   </v-app-bar>
 </template>

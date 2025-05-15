@@ -1,13 +1,12 @@
 <template>
   <div class="admin-ability">
-    <h1>Admin Ability</h1>
-    <p>This is a simple Vue component.</p>
+    <h1>Admin</h1>
   </div>
 </template>
 
 <script>
 export default {
-  name: 'AmbulanceAbility',
+  name: 'Admin',
 }
 </script>
 
